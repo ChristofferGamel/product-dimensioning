@@ -8,94 +8,42 @@ class Mask():
         self.alpha_v = 0
         self.beta_v = 0
         
-        #self.blacken_non_white()
-        self.contrast()
+        self.show()
 
-    def contrast(self):
-        alpha = 2
-        beta = 10
+    def contrast(self, image, alpha, beta): #0.8110236220472441, 100
+        contrast = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+        return contrast
+    
 
-        def update_contrast(_):
-            nonlocal alpha, beta
+    def thresholding(self, image):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_8bit = cv2.convertScaleAbs(gray)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
+        return th2
 
-            alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 127.0
-            beta = cv2.getTrackbarPos('beta', 'Contrast') - 100
-            print(alpha, beta)
-
-        cv2.namedWindow("Contrast")
-        cv2.createTrackbar('alpha', "Contrast", 0, 127, update_contrast) #[0,127]
-        cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
-
-        while True:
-            contrast = cv2.convertScaleAbs(self.image, alpha=alpha, beta=beta)
-            resize_c = self.ResizeWithAspectRatio(contrast, width=300)
-
-            cv2.imshow("Contrast", resize_c)
-            
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-        cv2.destroyAllWindows()
+    def erosion(self, image):
+        kernel = np.ones((1,1),np.uint8)
+        er = cv2.erode(image,kernel,iterations = 8)
+        return er
+    
+    def contour(self, image):
+        contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        con = cv2.drawContours(image, contours, -1, (0,255,0), 3)
+        return con
 
 
-
-        
-    def blacken_non_white(self):
+    def show(self):
+        contrasted = self.contrast(self.image, 0.8110236220472441, 100)
+        thresholded = self.thresholding(contrasted)
+        eroded = self.erosion(thresholded)
         
         
-        resize_o = self.ResizeWithAspectRatio(self.image, width=1000)
-        
-
-        cv2.imshow("original", resize_o)
-        
-        
-        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-
-        # Create a mask for pixels within the white range
-        mask = cv2.threshold(gray, 105, 255, cv2.THRESH_BINARY_INV)[1]  # #2 = white range
-
-        # Apply the mask to blacken non-white areas
-        blackened_image = cv2.bitwise_and(self.image, self.image, mask=mask)
-
-        gray_blackened = cv2.cvtColor(blackened_image, cv2.COLOR_BGR2GRAY)
-        _, thresholded = cv2.threshold(gray_blackened, 1, 255, cv2.THRESH_BINARY)
-        contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        total_area = sum(cv2.contourArea(contour) for contour in contours)
-
-        # cv2.imshow("Blackened Image", blackened_image)
-        print("Total area of blackened regions:", total_area)
-
+        cv2.imshow("Thresholding", eroded)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    # def alpha(self, value, name, window): #onchange
-    #     self.alpha_v = value  # 0<a<1
-    #     self.show(name, window)
-
-
-    # def beta(self, value, name, window): #onchange
-    #     self.beta_v = value  # -127, 127
-    #     self.show(name, window)
-
-    # def show(self, name, window):
-    #     cv2.imshow(f"{name}", window)
     def nothing(self, x):
         pass
-
-    def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
-        dim = None
-        (h, w) = image.shape[:2]
-
-        if width is None and height is None:
-            return image
-        if width is None:
-            r = height / float(h)
-            dim = (int(w * r), height)
-        else:
-            r = width / float(w)
-            dim = (width, int(h * r))
-
-        return cv2.resize(image, dim, interpolation=inter)
 
 
 if __name__ == "__main__":
