@@ -3,7 +3,7 @@ import numpy as np
 
 class Mask():
     def __init__(self) -> None:
-        image_path = "cola.jpg"
+        image_path = "./pictures/cola.jpg"
         self.image = cv2.imread(image_path)
         self.alpha_v = 0
         self.beta_v = 0
@@ -76,18 +76,18 @@ class Mask():
         
         largest_contour = max(contours, key=cv2.contourArea)
         
-        # Approximate polygonal curve
+        #approx poly curve
         epsilon = 0.01 * cv2.arcLength(largest_contour, True)
         polygon = cv2.approxPolyDP(largest_contour, epsilon, True)
         
-        # Create a mask for the polygon
+        #mask
         mask = np.zeros(image.shape[:2], dtype=np.uint8)
         cv2.drawContours(mask, [polygon], 0, 255, thickness=cv2.FILLED)
         
         # Apply the mask to the image
         masked_image = cv2.bitwise_and(image, image, mask=mask)
         
-        # Draw the polygon on the masked image
+        #draw
         image_with_polygon = masked_image.copy()
         cv2.drawContours(image_with_polygon, [polygon], 0, (0, 0, 255), thickness=2)
         
@@ -97,7 +97,9 @@ class Mask():
     def show(self):
         cv2.imshow("original", self.image)
         contrasted = self.contrast(self.image, 0.8110236220472441, 100)
+        cv2.imshow("contrasted", contrasted)
         thresholded = self.thresholding(contrasted)
+        cv2.imshow("thresholded", thresholded)
         eroded = self.erosion(thresholded)
         print("contouring")
         contoured = self.contour(eroded)
