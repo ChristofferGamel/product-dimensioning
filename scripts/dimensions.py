@@ -73,12 +73,15 @@ class Mask():
         #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(image, 150, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(image=thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-        
-        largest_contour = max(contours, key=cv2.contourArea)
+        print("contours", contours[1])
+        largest_contour = contours[1]#max(contours[1], key=cv2.contourArea)
+        print("largest: ", largest_contour)
         
         #approx poly curve
         epsilon = 0.01 * cv2.arcLength(largest_contour, True)
+        print("epsilon ", epsilon)
         polygon = cv2.approxPolyDP(largest_contour, epsilon, True)
+        print("poly ",polygon)
         
         #mask
         mask = np.zeros(image.shape[:2], dtype=np.uint8)
