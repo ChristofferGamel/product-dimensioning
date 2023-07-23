@@ -1,14 +1,22 @@
 import cv2
 import numpy as np
+import math
 
 class Mask():
     def __init__(self) -> None:
+        # Image properties
         image_path = "./pictures/cola.jpg"
         self.image = cv2.imread(image_path)
         self.alpha_v = 0
         self.beta_v = 0
-        self.height = self.image.shape[0]
-        self.width = self.image.shape[1]
+        self.image_height = self.image.shape[0]
+        self.image_width = self.image.shape[1]
+
+        # Camera properties
+        self.camera_angle = 78 #degrees
+        self.distance_to_object = 20 #cm
+        self.camera_height = 10 #cm
+
         self.show()
 
     def contrast(self, image, alpha, beta): #0.8110236220472441, 100
@@ -50,9 +58,9 @@ class Mask():
     def find_extremes(self, list):
         self.max_x = 0
         self.max_y = 0
-        self.min_y = self.height
-        self.min_x = self.width
-        print(f"Height: {self.height}, Width: {self.width}")
+        self.min_y = self.image_height
+        self.min_x = self.image_width
+        print(f"Height: {self.image_height}, Width: {self.image_width}")
         
         for m_x in range(len(list)):
             if(list[m_x][0][0] > self.max_x):
@@ -78,10 +86,34 @@ class Mask():
         print("Max y set: ",self.max_y_set)
         print("Min x set: ",self.min_x_set)
         print("min y set: ",self.min_y_set)
+    
+    def calc(self):
+        object_width = self.max_x - self.min_x
+        object_degrees = (object_width/(self.image_width/self.camera_angle))/2
+
+        print("Object degrees: ",object_degrees)
+        print("Image width: ",self.image_width)
+        print("Object width: ",object_width)
+        print("Distance to object: ", self.distance_to_object)
+
+        a = self.distance_to_object
+        B = object_degrees
+        A = 180 - 90 - B
+        B_rad = self.deg_to_rad(B)
+        A_rad = self.deg_to_rad(A)
+        b = a / math.tan(A_rad)
+        object_width = b * 2
+
+        print("Object width: ",b)
+        
+
+        
 
 
 
-
+        return
+    def deg_to_rad(self, deg):
+        return((deg * math.pi)/180)
 
     def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
         dim = None
@@ -105,6 +137,7 @@ class Mask():
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
+        self.calc()
         
         
         while True:
