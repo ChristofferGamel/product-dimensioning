@@ -4,7 +4,7 @@ import time
 class Picture():
     def __init__(self):
         self.camera = PiCamera()
-        self.source = "/home/chris/Desktop/coding/autostoreHelpers/captured_images/test.jpg"
+        self.source = "/home/chris/Desktop/coding/autostoreHelpers/captured_images/left.jpg"
         self.capture()
         
     def capture(self):
