@@ -5,7 +5,7 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./pictures/cola.jpg"
+        image_path = "./captured_images/test.jpg"
         self.image = cv2.imread(image_path)
         self.alpha_v = 0
         self.beta_v = 0
@@ -14,7 +14,7 @@ class Mask():
 
         # Camera properties
         self.camera_angle = 78 #degrees
-        self.distance_to_object = 20 #cm
+        self.distance_to_object = 43 #cm
         self.camera_height = 10 #cm
 
         self.show()
@@ -99,7 +99,6 @@ class Mask():
         a = self.distance_to_object
         B = object_degrees
         A = 180 - 90 - B
-        B_rad = self.deg_to_rad(B)
         A_rad = self.deg_to_rad(A)
         b = a / math.tan(A_rad)
         object_width = b * 2
@@ -107,10 +106,7 @@ class Mask():
         print("Object width: ",b)
         
 
-        
-
-
-
+    
         return
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
