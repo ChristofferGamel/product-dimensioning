@@ -123,15 +123,26 @@ class Dimensions():
         pass
 
     def triangulate(self):
+        self.dist_betw_cams = 40.54
+        
+        
+
+
         angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
         
         self.object_cam_angle_left = self.left_properties.angle()
         left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
-        print(left_angle_rel)
+        
 
         self.object_cam_angle_right = self.right_properties.angle()
         right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
-        print(right_angle_rel)
+        
+        # Incorrect
+        # angle_left = left_angle_rel - ((180-self.left_properties.camera_angle)/2)
+        # angle_right = (90 - right_angle_rel)
+        # # right_angle_rel - ((180-self.right_properties.camera_angle)/2)
+        # print(angle_left, angle_right)
+
         return
 
 
