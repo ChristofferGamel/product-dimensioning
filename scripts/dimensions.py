@@ -14,7 +14,7 @@ class Mask():
 
         # Camera properties
         self.camera_angle = 78 #degrees
-        self.distance_to_object = 43 #cm
+        self.distance_to_object = 35.5 #cm
         self.camera_height = 10 #cm
 
         self.show()
