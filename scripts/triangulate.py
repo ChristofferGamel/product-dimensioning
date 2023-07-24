@@ -18,7 +18,7 @@ class Mask():
         self.distance_to_object = 35.5 #cm
         self.camera_height = 10 #cm
 
-        self.show()
+        self.final_image()
 
     def contrast(self, image, alpha, beta): #0.8110236220472441, 100
         contrast = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
@@ -83,47 +83,58 @@ class Mask():
 
 
 
-        print("Max x set: ",self.max_x_set)
-        print("Max y set: ",self.max_y_set)
-        print("Min x set: ",self.min_x_set)
-        print("min y set: ",self.min_y_set)
+        # print("Max x set: ",self.max_x_set)
+        # print("Max y set: ",self.max_y_set)
+        # print("Min x set: ",self.min_x_set)
+        # print("min y set: ",self.min_y_set)
     
     def angle(self):
         if self.orientation=="l": #left maxima
-            distance_pixels = self.min_x_set[0]
+            distance_pixels = self.max_x_set[0]
             angle = (distance_pixels/self.image_width) * self.camera_angle
-            # horizontal_FOV_radians = 2 * math.atan((self.image_width / 2) / self.camera_angle)
-            # angle_from_outmost_left = (distance_pixels / self.image_width) * horizontal_FOV_radians
-
-            # angle = angle_from_outmost_left * (180 / math.pi)
 
         elif self.orientation=="r": #right maxima
-            distance_pixels = self.max_x_set[0]
-            # horizontal_FOV_radians = 2 * math.atan((self.image_width / 2) / self.camera_angle)
-            # angle_from_outmost_left = (distance_pixels / self.image_width) * horizontal_FOV_radians
-
-            # angle = angle_from_outmost_left * (180 / math.pi)
+            distance_pixels = self.min_x_set[0]
             angle = (distance_pixels/self.image_width) * self.camera_angle
         
         return(angle)
     
-    def show(self):
+    def final_image(self):
         contrasted = self.contrast(self.image, 0.4645669291338583, 38)
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
-        # print(self.angle())
+        return(contoured)
+    
     def nothing(self, x):
         pass
 
 class Dimensions():
     def __init__(self) -> None:
+        left_path = "./captured_images/left.jpg"
+        right_path = "./captured_images/right.jpg"
+        self.left_properties = Mask("./captured_images/left.jpg", "l")
+        self.right_properties = Mask("./captured_images/right.jpg", "r")
+        self.object_cam_angle_left = self.left_properties.angle()
+        self.object_cam_angle_right = self.right_properties.angle()
+        self.triangulate()
+
+
         pass
 
-left = Mask("./captured_images/left.jpg", "l")
-print(left.angle())
+    def triangulate(self):
+        angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
+        
+        self.object_cam_angle_left = self.left_properties.angle()
+        left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
+        print(left_angle_rel)
+
+        self.object_cam_angle_right = self.right_properties.angle()
+        right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
+        print(right_angle_rel)
+        return
 
 
-# if __name__ == "__main__":
-    
-#     app = Mask("./captured_images/left.jpg", "l")
+
+if __name__ == "__main__":
+    app = Dimensions()
