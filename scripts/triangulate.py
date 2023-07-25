@@ -4,9 +4,9 @@ import math
 
 
 class Mask():
-    def __init__(self, image_path, orientation) -> None:
+    def __init__(self, image_path) -> None:
         # Image properties
-        self.orientation = orientation
+        
         self.image = cv2.imread(image_path)
         self.alpha_v = 0
         self.beta_v = 0
@@ -88,12 +88,12 @@ class Mask():
         # print("Min x set: ",self.min_x_set)
         # print("min y set: ",self.min_y_set)
     
-    def angle(self):
-        if self.orientation=="l": #left maxima
+    def angle(self, orientation):
+        if orientation=="l": #left maxima
             distance_pixels = self.max_x_set[0]
             angle = (distance_pixels/self.image_width) * self.camera_angle
 
-        elif self.orientation=="r": #right maxima
+        elif orientation=="r": #right maxima
             distance_pixels = self.min_x_set[0]
             angle = (distance_pixels/self.image_width) * self.camera_angle
         
@@ -113,37 +113,51 @@ class Dimensions():
     def __init__(self) -> None:
         left_path = "./captured_images/left.jpg"
         right_path = "./captured_images/right.jpg"
-        self.left_properties = Mask("./captured_images/left.jpg", "l")
-        self.right_properties = Mask("./captured_images/right.jpg", "r")
-        self.object_cam_angle_left = self.left_properties.angle()
-        self.object_cam_angle_right = self.right_properties.angle()
-        self.triangulate()
+        self.left_properties = Mask("./captured_images/left.jpg")
+        self.right_properties = Mask("./captured_images/right.jpg")
+        
+        self.common_point()
 
 
-        pass
-
-    def triangulate(self):
-        self.dist_betw_cams = 40.54
+    def common_point(self):
+        dist_betw_cams = 40.54
+        left_cam_rel_angle = 44.9
+        right_cam_rel_angle = 45.1
         
         
-
-
         angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
         
-        self.object_cam_angle_left = self.left_properties.angle()
+        self.object_cam_angle_left = self.left_properties.angle("l")
         left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
         
 
-        self.object_cam_angle_right = self.right_properties.angle()
+        self.object_cam_angle_right = self.right_properties.angle("r")
         right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
         
-        # Incorrect
-        # angle_left = left_angle_rel - ((180-self.left_properties.camera_angle)/2)
-        # angle_right = (90 - right_angle_rel)
-        # # right_angle_rel - ((180-self.right_properties.camera_angle)/2)
-        # print(angle_left, angle_right)
+        # left
+        self.A = left_angle_rel - left_cam_rel_angle
+        
+        # right
+        self.B = right_angle_rel - right_cam_rel_angle
+        
+        # object
+        self.C = 180 - self.A - self.B
+        
+        # between left and right
+        self.c = 40.54
+        
+        # distance from left cam
+        self.a = (self.c*math.sin(self.deg_to_rad(self.A))/math.sin(self.deg_to_rad(self.C)))
+        
+        # distance from right cam
+        self.b = (self.c*math.sin(self.deg_to_rad(self.B))/math.sin(self.deg_to_rad(self.C)))
+
+        print(self.A,self.B,self.C)
+        print(self.a,self.b,self.c)
 
         return
+    def deg_to_rad(self, deg):
+        return((deg * math.pi)/180)
 
 
 
