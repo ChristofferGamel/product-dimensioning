@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 import math
+from trianglesolver import solve, degree
+
+
 
 
 class Mask():
@@ -15,8 +18,6 @@ class Mask():
 
         # Camera properties
         self.camera_angle = 78 #degrees
-        self.distance_to_object = 35.5 #cm
-        self.camera_height = 10 #cm
 
         self.final_image()
 
@@ -83,78 +84,192 @@ class Mask():
 
 
 
-        # print("Max x set: ",self.max_x_set)
-        # print("Max y set: ",self.max_y_set)
-        # print("Min x set: ",self.min_x_set)
-        # print("min y set: ",self.min_y_set)
+        print("Max x set: ",self.max_x_set)
+        print("Max y set: ",self.max_y_set)
+        print("Min x set: ",self.min_x_set)
+        print("min y set: ",self.min_y_set)
     
-    def angle(self, orientation):
-        if orientation=="l": #left maxima
-            distance_pixels = self.max_x_set[0]
-            angle = (distance_pixels/self.image_width) * self.camera_angle
-
-        elif orientation=="r": #right maxima
+    def angle(self, orientation): # angle from leftmost fov to r or l edge
+        if orientation=="l": #left edge of image
             distance_pixels = self.min_x_set[0]
             angle = (distance_pixels/self.image_width) * self.camera_angle
+
+        elif orientation=="r": #right edge of image
+            distance_pixels = self.max_x_set[0]
+            angle = (distance_pixels/self.image_width) * self.camera_angle
+        elif orientation=="test":
+            object_center_x = self.max_x_set[0] - self.min_x_set[0]
+            angle = self.calculate_angle(self.image_width, object_center_x, 360, self.camera_angle)
         
         return(angle)
+    def calculate_angle(self, image_width, point, image_center_x, FOV_x):
+        angle_rad = math.atan((point - image_center_x) * math.tan(self.rad_to_deg(FOV_x) / 2) / (image_width / 2))
+        angle_deg = self.rad_to_deg(angle_rad)
+        return angle_deg
+    def rad_to_deg(self, rad):
+        return(rad*(180/math.pi))
+    def deg_to_rad(self, deg):
+        return((deg * math.pi)/180)
+    def properties(self):
+        dict = {"image_width":self.image_width, 
+                "image_height":self.image_height,
+                "y_min_set":self.min_y_set,
+                "x_min_set":self.min_x_set,
+                "y_max_set":self.max_y_set,
+                "x_max_set":self.max_x_set,
+                "cam_fov":self.camera_angle}
+        return dict
     
     def final_image(self):
         contrasted = self.contrast(self.image, 0.4645669291338583, 38)
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
+        while True:
+            cv2.imshow("contoured", contoured)
+            key = cv2.waitKey(1) & 0xFF
+
+            
+            if key == ord("q"):
+                break
+        cv2.destroyAllWindows()
         return(contoured)
     
     def nothing(self, x):
         pass
 
+#  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+
 class Dimensions():
     def __init__(self) -> None:
         left_path = "./captured_images/left.jpg"
         right_path = "./captured_images/right.jpg"
-        self.left_properties = Mask("./captured_images/left.jpg")
-        self.right_properties = Mask("./captured_images/right.jpg")
+        self.left_properties = Mask("./captured_images/left.jpg") #front
+        self.right_properties = Mask("./captured_images/right.jpg") #side
         
         self.common_point()
+        self.width()
+    
+    def positive(self,num):
+        return (math.sqrt((num)**2))
 
 
     def common_point(self):
+        # Image properties:
         dist_betw_cams = 40.54
-        left_cam_rel_angle = 44.9
-        right_cam_rel_angle = 45.1
+        self.left_image_properties = self.left_properties.properties()
+        self.right_image_properties = self.right_properties.properties()
+        print("l/r")
+
+        self.left_image_width = self.left_image_properties["image_width"]
+        self.right_image_width = self.right_image_properties["image_width"]
+        print("l/r: Width:",self.left_image_width, self.right_image_width)
+        
+        self.left_center = self.left_image_width / 2
+        self.right_center = self.right_image_width / 2
+        print("l/r: Center:",self.left_center, self.right_center)
         
         
-        angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
-        
-        self.object_cam_angle_left = self.left_properties.angle("l")
-        left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
+        self.left_fov = self.left_image_properties["cam_fov"]
+        self.right_fov = self.right_image_properties["cam_fov"]
+        print("l/r FOV: ",self.left_fov,self.right_fov)
+
+        # Contoured values
+        self.left_cam_min_x = self.left_image_properties["x_min_set"][0]
+        self.left_cam_max_x = self.left_image_properties["x_max_set"][0]
+        print("left_max: ",self.left_cam_max_x)
+
+
+        self.right_cam_min_x = self.right_image_properties["x_min_set"][0]
+        self.right_cam_max_x = self.right_image_properties["x_max_set"][0]
+        print("right_min: ",)
+
         
 
-        self.object_cam_angle_right = self.right_properties.angle("r")
-        right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
-        
-        # left
-        self.A = left_angle_rel - left_cam_rel_angle
-        
-        # right
-        self.B = right_angle_rel - right_cam_rel_angle
-        
-        # object
-        self.C = 180 - self.A - self.B
-        
-        # between left and right
-        self.c = 40.54
-        
-        # distance from left cam
-        self.a = (self.c*math.sin(self.deg_to_rad(self.A))/math.sin(self.deg_to_rad(self.C)))
-        
-        # distance from right cam
-        self.b = (self.c*math.sin(self.deg_to_rad(self.B))/math.sin(self.deg_to_rad(self.C)))
+        # Angles
+        left_cam_angle_to_right_point = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
+        right_cam_angle_to_left_point = self.right_properties.calculate_angle(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
 
-        print(self.A,self.B,self.C)
-        print(self.a,self.b,self.c)
+        A = 90 - 45 - math.sqrt((left_cam_angle_to_right_point)**2)
+        B = 90 - 45 - math.sqrt((right_cam_angle_to_left_point)**2)
+        print("ab: ",left_cam_angle_to_right_point,right_cam_angle_to_left_point)
+        c = 40.54
 
+        a,b,c,A,B,C = solve(c=c, A=A*degree, B=B*degree)
+        self.b = b
+
+        print(a,b)
+
+
+
+        # dist_betw_cams = 40.54 # unused
+        # left_cam_rel_angle = 44.9
+        # right_cam_rel_angle = 45.1
+        
+        
+        # angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
+        
+        # self.object_cam_angle_left = self.left_properties.angle("l")
+        # print("test angle: ",self.left_properties.angle("test"))
+        # print("(Left cam) Angle from leftmost to left edge of object: ",self.object_cam_angle_left)
+        # left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
+        # print(": ",left_angle_rel)
+
+        # self.object_cam_angle_right = self.right_properties.angle("r")
+        # print("(Right cam) Angle from leftmost to right edge of object: ",self.object_cam_angle_right)
+        # right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
+        # print("right_angle_rel",right_angle_rel)
+        # # left
+        # self.A = left_angle_rel - left_cam_rel_angle
+        
+        # # right
+        # self.B = right_angle_rel - right_cam_rel_angle
+        
+        # # object
+        # self.C = 180 - self.A - self.B
+        
+        # # between left and right
+        # self.c = 40.54
+        
+        # # distance from left cam
+        # #self.a = (self.c*math.sin(self.deg_to_rad(self.A))/math.sin(self.deg_to_rad(self.C)))
+        
+        # # distance from right cam
+        # a,b,c,A,B,C = solve(c=self.c, C=self.C*degree, B=self.B*degree)
+        # #self.b = (self.c*math.sin(self.deg_to_rad(self.B))/math.sin(self.deg_to_rad(self.C)))
+
+        # self.a = a
+        # self.b=b
+        # self.c=c
+        # self.A=A/degree
+        # self.B=B/degree
+        # self.C=C/degree
+        
+        # print(self.A,self.B,self.C)
+        # print(self.a,self.b,self.c)
+
+    def width(self): # front / left camera
+        image_properties = self.left_properties.properties()
+        right = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
+        left = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_min_x, self.left_center, self.left_fov)
+        object_angle = self.positive(right) + self.positive(left)
+
+        # Method 1 assuming orthogonal placement of object
+        C = object_angle
+        A = (180 - object_angle)/2
+        B = (180 - object_angle)/2
+        b = self.b
+
+        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        print(c/2)
+
+        
+
+
+    def depth(self): # length
+        return    
+    
+    def height(self):
         return
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
