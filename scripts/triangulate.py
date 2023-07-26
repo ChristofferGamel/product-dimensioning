@@ -185,7 +185,6 @@ class Dimensions():
         print("right_min: ",)
 
         
-
         # Angles
         left_cam_angle_to_right_point = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
         right_cam_angle_to_left_point = self.right_properties.calculate_angle(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
@@ -193,7 +192,7 @@ class Dimensions():
         A = 90 - 45 - math.sqrt((left_cam_angle_to_right_point)**2)
         B = 90 - 45 - math.sqrt((right_cam_angle_to_left_point)**2)
         print("ab: ",left_cam_angle_to_right_point,right_cam_angle_to_left_point)
-        c = 40.54
+        c = dist_betw_cams
 
         a,b,c,A,B,C = solve(c=c, A=A*degree, B=B*degree)
         self.b = b
@@ -208,15 +207,13 @@ class Dimensions():
 
         # Method 1 assuming orthogonal placement of object
         C = object_angle
-        A = (180 - object_angle)/2
-        B = (180 - object_angle)/2
+        A = 90 - self.positive(right)
+        B = 90 - self.positive(left)
         b = self.b
+        print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
         print(c/2)
-
-        
-
 
     def depth(self): # length
         return    
