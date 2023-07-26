@@ -200,54 +200,6 @@ class Dimensions():
 
         print(a,b)
 
-
-
-        # dist_betw_cams = 40.54 # unused
-        # left_cam_rel_angle = 44.9
-        # right_cam_rel_angle = 45.1
-        
-        
-        # angle_rel = (180 - self.left_properties.camera_angle) / 2 #83.28333333333333
-        
-        # self.object_cam_angle_left = self.left_properties.angle("l")
-        # print("test angle: ",self.left_properties.angle("test"))
-        # print("(Left cam) Angle from leftmost to left edge of object: ",self.object_cam_angle_left)
-        # left_angle_rel = 180 - self.object_cam_angle_left - angle_rel
-        # print(": ",left_angle_rel)
-
-        # self.object_cam_angle_right = self.right_properties.angle("r")
-        # print("(Right cam) Angle from leftmost to right edge of object: ",self.object_cam_angle_right)
-        # right_angle_rel = 90 - (self.right_properties.camera_angle/2) + self.object_cam_angle_right
-        # print("right_angle_rel",right_angle_rel)
-        # # left
-        # self.A = left_angle_rel - left_cam_rel_angle
-        
-        # # right
-        # self.B = right_angle_rel - right_cam_rel_angle
-        
-        # # object
-        # self.C = 180 - self.A - self.B
-        
-        # # between left and right
-        # self.c = 40.54
-        
-        # # distance from left cam
-        # #self.a = (self.c*math.sin(self.deg_to_rad(self.A))/math.sin(self.deg_to_rad(self.C)))
-        
-        # # distance from right cam
-        # a,b,c,A,B,C = solve(c=self.c, C=self.C*degree, B=self.B*degree)
-        # #self.b = (self.c*math.sin(self.deg_to_rad(self.B))/math.sin(self.deg_to_rad(self.C)))
-
-        # self.a = a
-        # self.b=b
-        # self.c=c
-        # self.A=A/degree
-        # self.B=B/degree
-        # self.C=C/degree
-        
-        # print(self.A,self.B,self.C)
-        # print(self.a,self.b,self.c)
-
     def width(self): # front / left camera
         image_properties = self.left_properties.properties()
         right = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
