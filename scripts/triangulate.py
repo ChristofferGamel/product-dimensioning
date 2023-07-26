@@ -147,8 +147,7 @@ class Dimensions():
         self.left_properties = Mask("./captured_images/left.jpg") #front
         self.right_properties = Mask("./captured_images/right.jpg") #side
         
-        self.common_point()
-        self.width()
+        self.main()
     
     def positive(self,num):
         return (math.sqrt((num)**2))
@@ -214,6 +213,7 @@ class Dimensions():
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
         print(c/2)
+        return c/2
 
     def depth(self): # length
         return    
@@ -222,6 +222,14 @@ class Dimensions():
         return
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
+    
+    def main(self):
+        self.common_point()
+        width = self.width()
+        can_width = 6.62
+        accuracy = can_width/width
+        print(f"Accuracy: {accuracy}%")
+
 
 
 
