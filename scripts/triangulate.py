@@ -231,7 +231,7 @@ class Dimensions():
     def main(self):
         self.common_point()
         width = self.width()
-        can_width = 6.62
+        can_width = 5.93
         accuracy = width/can_width
         print(f"Accuracy: {accuracy}%")
 
