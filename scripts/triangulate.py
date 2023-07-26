@@ -106,6 +106,11 @@ class Mask():
         angle_rad = math.atan((point - image_center_x) * math.tan(self.rad_to_deg(FOV_x) / 2) / (image_width / 2))
         angle_deg = self.rad_to_deg(angle_rad)
         return angle_deg
+    
+    def calculate_angle2(self, image_width, point, image_center_x, FOV_x):
+        angle_rad = math.atan((2*point/image_width) * FOV_x/image_width)
+        angle_deg = self.rad_to_deg(angle_rad)
+        return angle_deg
     def rad_to_deg(self, rad):
         return(rad*(180/math.pi))
     def deg_to_rad(self, deg):
@@ -185,8 +190,8 @@ class Dimensions():
 
         
         # Angles
-        left_cam_angle_to_right_point = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
-        right_cam_angle_to_left_point = self.right_properties.calculate_angle(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
+        left_cam_angle_to_right_point = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
+        right_cam_angle_to_left_point = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
 
         A = 90 - 45 - math.sqrt((left_cam_angle_to_right_point)**2)
         B = 90 - 45 - math.sqrt((right_cam_angle_to_left_point)**2)
@@ -200,8 +205,8 @@ class Dimensions():
 
     def width(self): # front / left camera
         image_properties = self.left_properties.properties()
-        right = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
-        left = self.left_properties.calculate_angle(self.left_image_width, self.left_cam_min_x, self.left_center, self.left_fov)
+        right = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
+        left = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_min_x, self.left_center, self.left_fov)
         object_angle = self.positive(right) + self.positive(left)
 
         # Method 1 assuming orthogonal placement of object
@@ -212,8 +217,8 @@ class Dimensions():
         print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
-        print(c/2)
-        return c/2
+        print(c)
+        return c
 
     def depth(self): # length
         return    
@@ -227,7 +232,7 @@ class Dimensions():
         self.common_point()
         width = self.width()
         can_width = 6.62
-        accuracy = can_width/width
+        accuracy = width/can_width
         print(f"Accuracy: {accuracy}%")
 
 
