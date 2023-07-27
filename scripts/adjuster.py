@@ -5,7 +5,7 @@ import numpy as np
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./pictures/cola.jpg"
+        image_path = "./captured_images/right.jpg"
         self.image = cv2.imread(image_path)
         
         self.contrastTool()

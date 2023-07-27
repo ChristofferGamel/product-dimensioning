@@ -7,10 +7,11 @@ from trianglesolver import solve, degree
 
 
 class Mask():
-    def __init__(self, image_path) -> None:
+    def __init__(self, image_path, image_name)-> None:
         # Image properties
         
         self.image = cv2.imread(image_path)
+        self.image_name = image_name
         self.alpha_v = 0
         self.beta_v = 0
         self.image_height = self.image.shape[0]
@@ -18,6 +19,12 @@ class Mask():
 
         # Camera properties
         self.camera_angle = 78 #degrees
+
+        # Image adjustments:
+        self.alpha = 0.4645669291338583
+        self.beta = 48
+        self.kernel_iterations = 2
+        self.kernel_size = 4
 
         self.final_image()
 
@@ -32,8 +39,8 @@ class Mask():
         return th2
 
     def erosion(self, image):
-        kernel = np.ones((4,4),np.uint8)
-        er = cv2.erode(image,kernel,iterations = 2)
+        kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
+        er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
         return er
     
     def contour(self, image):
@@ -126,12 +133,12 @@ class Mask():
         return dict
     
     def final_image(self):
-        contrasted = self.contrast(self.image, 0.4645669291338583, 38)
+        contrasted = self.contrast(self.image, self.alpha, self.beta)
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
         while True:
-            cv2.imshow("contoured", contoured)
+            cv2.imshow(f"{self.image_name}", contoured)
             key = cv2.waitKey(1) & 0xFF
 
             
@@ -149,8 +156,8 @@ class Dimensions():
     def __init__(self) -> None:
         left_path = "./captured_images/left.jpg"
         right_path = "./captured_images/right.jpg"
-        self.left_properties = Mask("./captured_images/left.jpg") #front
-        self.right_properties = Mask("./captured_images/right.jpg") #side
+        self.left_properties = Mask(left_path, "Left") #front
+        self.right_properties = Mask(right_path, "Right") #side
         
         self.main()
     
@@ -221,7 +228,22 @@ class Dimensions():
         return c
 
     def depth(self): # length
-        return    
+        image_properties = self.right_properties.properties()
+        right = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_max_x, self.right_center, self.right_fov)
+        left = self.left_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
+        object_angle = self.positive(right) + self.positive(left)
+
+        # Method 1 assuming orthogonal placement of object
+        C = object_angle
+        A = 90 - self.positive(right)
+        B = 90 - self.positive(left)
+        b = self.b
+        print(f"C: {C}, A: {A}, B: {B}, b:{b}")
+
+        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        print("depth: ",c)
+        return c
+          
     
     def height(self):
         return
@@ -234,6 +256,10 @@ class Dimensions():
         can_width = 5.93
         accuracy = width/can_width
         print(f"Accuracy: {accuracy}%")
+        depth = self.depth()
+        accuracy_depth = can_width/depth
+        print(f"Accuracy: {accuracy_depth}%")
+        
 
 
 
