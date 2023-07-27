@@ -7,7 +7,8 @@ class Tools():
     def __init__(self) -> None:
         image_path = "./captured_images/right.jpg"
         self.image = cv2.imread(image_path)
-        
+        self.image_height = self.image.shape[0]
+        self.image_width = self.image.shape[1]
         self.contrastTool()
 
     def contrastTool(self):
@@ -39,58 +40,73 @@ class Tools():
             th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
             kernel = np.ones((k_size,k_size),np.uint8)
             er = cv2.erode(th2,kernel,iterations = k_iterations)
-            
             ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
-            contours, hierarchy = cv2.findContours(image=thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-                                                
-            # draw contours on the original image
-            image_copy = self.image.copy()
-            cv2.drawContours(image_copy, contours, -1, (0, 255, 0), 2, cv2.LINE_AA)
+            self.image_copy = self.image.copy()
+            #resize_c = self.ResizeWithAspectRatio(self.image_copy, width=300)
+            contoured = self.contour(thresh)
+            cv2.imshow("Contrast", contoured)
 
-            for contour in contours:
-                # Approximate the contour with a polygon
-                epsilon = 0.14 * cv2.arcLength(contour, True)
-                approx = cv2.approxPolyDP(contour, epsilon, True)
-
-                # Draw the polygon
-                cv2.polylines(image_copy, [approx], True, (0, 255, 0), 2)
-            resize_c = self.ResizeWithAspectRatio(image_copy, width=300)
-
-            cv2.imshow("Contrast", resize_c)
-            
+        
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         
         cv2.destroyAllWindows()
-
-    def blacken_non_white(self):
+    
+    def find_extremes(self, list):
+        self.max_x = 0
+        self.max_y = 0
+        self.min_y = self.image_height
+        self.min_x = self.image_width
         
         
-        resize_o = self.ResizeWithAspectRatio(self.image, width=1000)
+        for m_x in range(len(list)):
+            if(list[m_x][0][0] > self.max_x):
+                self.max_x = list[m_x][0][0]
+                self.max_x_set = list[m_x][0]
+        for m_y in range(len(list)):
+            if(list[m_y][0][1] > self.max_y):
+                self.max_y = list[m_y][0][1]
+                self.max_y_set = list[m_y][0]
+
+        for mi_y in range(len(list)):
+            if list[mi_y][0][1] < self.min_y:
+                self.min_y = list[mi_y][0][1]
+                self.min_y_set = list[mi_y][0]
+        for mi_x in range(len(list)):
+            if list[mi_x][0][0] < self.min_x:
+                self.min_x = list[mi_x][0][0]
+                self.min_x_set = list[mi_x][0]
+    def contour(self, image):
         
-
-        cv2.imshow("original", resize_o)
+        contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+                                            
+        # draw contours on the original image
         
+        largest_contour = max(contours, key=cv2.contourArea)
+        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
+        try:
+            second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
+            self.find_extremes(second_largest_contour)
+            cv2.line(self.image_copy, (self.max_x,self.min_y), (self.max_x,self.max_y), (255, 0, 0), 3)
+            cv2.line(self.image_copy, (self.min_x,self.max_y), (self.max_x,self.max_y), (255, 0, 0), 3)
+            cv2.line(self.image_copy, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
+            cv2.line(self.image_copy, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
+        except:
+            print("Max hit")
         
-        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        cv2.drawContours(self.image_copy, contours, -1, (0, 255, 0), 2, cv2.LINE_AA)
 
-        # Create a mask for pixels within the white range
-        mask = cv2.threshold(gray, 105, 255, cv2.THRESH_BINARY_INV)[1]  # #2 = white range
+        for contour in contours:
+            # Approximate the contour with a polygon
+            epsilon = 0.14 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
 
-        # Apply the mask to blacken non-white areas
-        blackened_image = cv2.bitwise_and(self.image, self.image, mask=mask)
+            # Draw the polygon
+            cv2.polylines(self.image_copy, [approx], True, (0, 255, 0), 2)
+        return self.image_copy
 
-        gray_blackened = cv2.cvtColor(blackened_image, cv2.COLOR_BGR2GRAY)
-        _, thresholded = cv2.threshold(gray_blackened, 1, 255, cv2.THRESH_BINARY)
-        contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        total_area = sum(cv2.contourArea(contour) for contour in contours)
-
-        # cv2.imshow("Blackened Image", blackened_image)
-        print("Total area of blackened regions:", total_area)
-
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
+        
+    
     def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
         dim = None
         (h, w) = image.shape[:2]
