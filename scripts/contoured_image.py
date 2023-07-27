@@ -17,10 +17,17 @@ class Mask():
         self.distance_to_object = 35.5 #cm
         self.camera_height = 10 #cm
 
+        # Image adjustments:
+        self.alpha = 0.5905511811023622
+        self.beta = -79
+        self.kernel_size = 4
+        self.kernel_iterations = 3
+        
+
         self.show()
 
     def contrast(self, image, alpha, beta): #0.8110236220472441, 100
-        contrast = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+        contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         return contrast
     
     def thresholding(self, image):
@@ -30,8 +37,8 @@ class Mask():
         return th2
 
     def erosion(self, image):
-        kernel = np.ones((4,4),np.uint8)
-        er = cv2.erode(image,kernel,iterations = 2)
+        kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
+        er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
         return er
     
     def contour(self, image):
@@ -87,30 +94,8 @@ class Mask():
         print("Min x set: ",self.min_x_set)
         print("min y set: ",self.min_y_set)
     
-    def calc(self):
-        object_width = self.max_x - self.min_x
-        object_degrees = (object_width/(self.image_width/self.camera_angle))/2
-
-        print("Object degrees: ",object_degrees)
-        print("Image width: ",self.image_width)
-        print("Object width: ",object_width)
-        print("Distance to object: ", self.distance_to_object)
-
-        a = self.distance_to_object
-        B = object_degrees
-        A = 180 - 90 - B
-        A_rad = self.deg_to_rad(A)
-        b = a / math.tan(A_rad)
-        object_width = b * 2
-
-        print("Object width: ",b)
+   
         
-
-    
-        return
-    def deg_to_rad(self, deg):
-        return((deg * math.pi)/180)
-
     def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
         dim = None
         (h, w) = image.shape[:2]
@@ -133,7 +118,6 @@ class Mask():
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
-        self.calc()
         
         
         while True:
