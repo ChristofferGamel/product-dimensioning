@@ -16,14 +16,20 @@ class Tools():
         beta = 10
         k_size = 1
         k_iterations = 8
+        blocksize = 11
+        C = 4
+
+
 
         def update_contrast(_):
-            nonlocal alpha, beta, k_iterations, k_size
+            nonlocal alpha, beta, k_iterations, k_size, blocksize, C
 
             alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 127.0
             beta = cv2.getTrackbarPos('beta', 'Contrast') - 100
             k_size = cv2.getTrackbarPos('kernel_size', 'Contrast')
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
+            blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
+            C = cv2.getTrackbarPos('C', 'Contrast')
             print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}")
 
         cv2.namedWindow("Contrast")
@@ -32,12 +38,14 @@ class Tools():
         cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
         cv2.createTrackbar('kernel_size', "Contrast", 0, 10, update_contrast) 
         cv2.createTrackbar('kernel_iterations', "Contrast", 0, 10, update_contrast)
+        cv2.createTrackbar('blocksize', "Contrast", 0, 20, update_contrast) 
+        cv2.createTrackbar('C', "Contrast", 0, 10, update_contrast)
 
         while True:
             contrast = cv2.convertScaleAbs(self.image, alpha=alpha, beta=beta)
             gray = cv2.cvtColor(contrast, cv2.COLOR_BGR2GRAY)
             gray_8bit = cv2.convertScaleAbs(gray)
-            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
+            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
             kernel = np.ones((k_size,k_size),np.uint8)
             er = cv2.erode(th2,kernel,iterations = k_iterations)
             ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
