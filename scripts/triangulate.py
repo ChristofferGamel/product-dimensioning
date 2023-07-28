@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import math
 from trianglesolver import solve, degree
+from right_triangle import RightTriangle
 
 
 
@@ -114,10 +115,15 @@ class Mask():
         angle_deg = self.rad_to_deg(angle_rad)
         return angle_deg
     
-    def calculate_angle2(self, image_width, point, image_center_x, FOV_x):
+    def calculate_angle2(self, image_width, point, FOV_x):
         angle_rad = math.atan((2*point/image_width) * FOV_x/image_width)
         angle_deg = self.rad_to_deg(angle_rad)
         return angle_deg
+    def calculate_angle_y(self, image_height, point_y, FOV_y):
+        angle_rad = math.atan((2 * point_y / image_height - 1) * math.tan(math.radians(FOV_y) / 2))
+        angle_deg = math.degrees(angle_rad)
+        return angle_deg
+    
     def rad_to_deg(self, rad):
         return(rad*(180/math.pi))
     def deg_to_rad(self, deg):
@@ -197,8 +203,8 @@ class Dimensions():
 
         
         # Angles
-        left_cam_angle_to_right_point = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
-        right_cam_angle_to_left_point = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
+        left_cam_angle_to_right_point = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_fov)
+        right_cam_angle_to_left_point = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_fov)
 
         A = 90 - 45 - math.sqrt((left_cam_angle_to_right_point)**2)
         B = 90 - 45 - math.sqrt((right_cam_angle_to_left_point)**2)
@@ -212,8 +218,8 @@ class Dimensions():
 
     def width(self): # front / left camera
         image_properties = self.left_properties.properties()
-        right = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_center, self.left_fov)
-        left = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_min_x, self.left_center, self.left_fov)
+        right = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_max_x, self.left_fov)
+        left = self.left_properties.calculate_angle2(self.left_image_width, self.left_cam_min_x, self.left_fov)
         object_angle = self.positive(right) + self.positive(left)
 
         # Method 1 assuming orthogonal placement of object
@@ -224,13 +230,15 @@ class Dimensions():
         print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        self.triangle_height = math.sin(A)*b
+
         print(c)
         return c
 
     def depth(self): # length
         image_properties = self.right_properties.properties()
-        right = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_max_x, self.right_center, self.right_fov)
-        left = self.left_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_center, self.right_fov)
+        right = self.right_properties.calculate_angle2(self.right_image_width, self.right_cam_max_x, self.right_fov)
+        left = self.left_properties.calculate_angle2(self.right_image_width, self.right_cam_min_x, self.right_fov)
         object_angle = self.positive(right) + self.positive(left)
 
         # Method 1 assuming orthogonal placement of object
@@ -246,6 +254,18 @@ class Dimensions():
           
     
     def height(self):
+        dist_to_center = self.triangle_height
+        max_y = self.left_image_properties["y_max_set"][1]
+        min_y = self.left_image_properties["y_min_set"][1]
+        height = self.left_image_properties["image_height"]
+        center = height/2
+        angle1 = self.left_properties.calculate_angle_y(height, max_y, self.left_fov)
+        angle2 = self.left_properties.calculate_angle_y(height, min_y, self.left_fov)
+        
+        angle_sum = self.positive(angle1) + self.positive(angle2)   
+        
+
+
         return
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
@@ -259,6 +279,7 @@ class Dimensions():
         depth = self.depth()
         accuracy_depth = can_width/depth
         print(f"Accuracy: {accuracy_depth}%")
+        self.height()
         
 
 
