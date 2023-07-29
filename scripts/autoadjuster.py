@@ -295,21 +295,24 @@ class Dimensions():
                                 iteration += 1
                                 self.call(alpha, beta, kernel_size, kernel_iterations, C)
                                 self.common_point()
-                                width = self.width()
+                                object_width = self.width()
                                 can_width = 5.93
-                                accuracy_w = width/can_width
+                                can_depth = 5.93
+                                accuracy_w = object_width/can_width
                                 # print(f"Accuracy: {accuracy_w}%")
-                                depth = self.depth()
-                                accuracy_d = can_width/depth
+                                object_depth = self.depth()
+                                accuracy_d = object_depth/can_depth
                                 # print(f"Accuracy: {accuracy_d}%")
                                 avg = (accuracy_w+accuracy_d)/2
                                 print(f"Average accuracy for iteration {iteration} is: {avg}")
                                 diff = self.positive(avg - 1)
                                 if diff < min_diff:
+                                    final_d = object_depth
+                                    final_w = object_width
                                     min_diff = diff
                                     best_index = iteration
-                                    width = self.object_width
-                                    depth = self.object_depth
+                                    #width = self.object_width
+                                    #depth = self.object_depth
                                     accuracy_arr = {iteration: avg}
                                     alpha_arr = {iteration: alpha}
                                     beta_arr = {iteration: beta}
@@ -321,8 +324,8 @@ class Dimensions():
                                 print(f"Iteration {iteration} failed")
         end_time1 = time.time()
         print(f"Time elapsed 1: {end_time1-start_time}")
-        print(width)
-        print(depth)
+        print(final_d)
+        print(final_w)
         print(alpha_arr)
         print(beta_arr)
         print(kernel_iterations_arr)
