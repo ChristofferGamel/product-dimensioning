@@ -284,7 +284,7 @@ class Dimensions():
         iteration = 0
         accuracy_arr = {}
         closest = 0
-        min_diff = 100000000
+        magn = 100000000
 
         for alpha in range(1, 300, 100): #/100
             for beta in range(0, 200, 100): #-100
@@ -305,11 +305,15 @@ class Dimensions():
                                 # print(f"Accuracy: {accuracy_d}%")
                                 avg = (accuracy_w+accuracy_d)/2
                                 print(f"Average accuracy for iteration {iteration} is: {avg}")
-                                diff = self.positive(avg - 1)
-                                if diff < min_diff:
+                                #diff = self.positive(avg - 1)
+                                diff_w = self.positive(accuracy_w-1)
+                                diff_d = self.positive(accuracy_d-1)
+                                acc_vector = [diff_w,diff_d]
+                                vector_magnitude = math.sqrt(sum(i**2 for i in acc_vector))
+                                if vector_magnitude < magn:
+                                    magn = vector_magnitude
                                     final_d = object_depth
                                     final_w = object_width
-                                    min_diff = diff
                                     best_index = iteration
                                     #width = self.object_width
                                     #depth = self.object_depth
