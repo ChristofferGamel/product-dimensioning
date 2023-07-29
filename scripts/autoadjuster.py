@@ -3,6 +3,7 @@ import numpy as np
 import math
 from trianglesolver import solve, degree
 from right_triangle import RightTriangle
+import time
 
 
 
@@ -22,11 +23,11 @@ class Mask():
         self.camera_angle = 78 #degrees
 
         # Image adjustments:
-        self.alpha = 0.4645669291338583
-        self.beta = 48
-        self.kernel_iterations = 2
-        self.kernel_size = 4
-        self.C = 4
+        self.alpha = alpha
+        self.beta = beta
+        self.kernel_iterations = kernel_iterations
+        self.kernel_size = kernel_size
+        self.C = C
 
         self.final_image()
 
@@ -71,7 +72,7 @@ class Mask():
         self.max_y = 0
         self.min_y = self.image_height
         self.min_x = self.image_width
-        print(f"Height: {self.image_height}, Width: {self.image_width}")
+        # print(f"Height: {self.image_height}, Width: {self.image_width}")
         
         for m_x in range(len(list)):
             if(list[m_x][0][0] > self.max_x):
@@ -93,10 +94,10 @@ class Mask():
 
 
 
-        print("Max x set: ",self.max_x_set)
-        print("Max y set: ",self.max_y_set)
-        print("Min x set: ",self.min_x_set)
-        print("min y set: ",self.min_y_set)
+        # print("Max x set: ",self.max_x_set)
+        # print("Max y set: ",self.max_y_set)
+        # print("Min x set: ",self.min_x_set)
+        # print("min y set: ",self.min_y_set)
     
     def angle(self, orientation): # angle from leftmost fov to r or l edge
         if orientation=="l": #left edge of image
@@ -144,14 +145,14 @@ class Mask():
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
-        while True:
-            cv2.imshow(f"{self.image_name}", contoured)
-            key = cv2.waitKey(1) & 0xFF
+        # while True:
+        #     cv2.imshow(f"{self.image_name}", contoured)
+        #     key = cv2.waitKey(1) & 0xFF
 
             
-            if key == ord("q"):
-                break
-        cv2.destroyAllWindows()
+        #     if key == ord("q"):
+        #         break
+        # cv2.destroyAllWindows()
         return(contoured)
     
     def nothing(self, x):
@@ -161,18 +162,9 @@ class Mask():
 
 class Dimensions():
     def __init__(self) -> None:
-        left_path = "./captured_images/left.jpg"
-        right_path = "./captured_images/right.jpg"
-        alpha = 0.4645669291338583
-        beta = 48
-        kernel_i = 2
-        kernel_size = 4
-        C = 4
-        self.left_properties = Mask(left_path, "Left", alpha, beta, kernel_i, kernel_size, C) #front
-        self.right_properties = Mask(right_path, "Right", alpha, beta, kernel_i, kernel_size, C) #side
-        
-        
         self.main()
+
+   
     
     def positive(self,num):
         return (math.sqrt((num)**2))
@@ -183,30 +175,30 @@ class Dimensions():
         dist_betw_cams = 40.54
         self.left_image_properties = self.left_properties.properties()
         self.right_image_properties = self.right_properties.properties()
-        print("l/r")
+        # print("l/r")
 
         self.left_image_width = self.left_image_properties["image_width"]
         self.right_image_width = self.right_image_properties["image_width"]
-        print("l/r: Width:",self.left_image_width, self.right_image_width)
+        # print("l/r: Width:",self.left_image_width, self.right_image_width)
         
         self.left_center = self.left_image_width / 2
         self.right_center = self.right_image_width / 2
-        print("l/r: Center:",self.left_center, self.right_center)
+        # print("l/r: Center:",self.left_center, self.right_center)
         
         
         self.left_fov = self.left_image_properties["cam_fov"]
         self.right_fov = self.right_image_properties["cam_fov"]
-        print("l/r FOV: ",self.left_fov,self.right_fov)
+        # print("l/r FOV: ",self.left_fov,self.right_fov)
 
         # Contoured values
         self.left_cam_min_x = self.left_image_properties["x_min_set"][0]
         self.left_cam_max_x = self.left_image_properties["x_max_set"][0]
-        print("left_max: ",self.left_cam_max_x)
+        # print("left_max: ",self.left_cam_max_x)
 
 
         self.right_cam_min_x = self.right_image_properties["x_min_set"][0]
         self.right_cam_max_x = self.right_image_properties["x_max_set"][0]
-        print("right_min: ",)
+        # print("right_min: ",)
 
         
         # Angles
@@ -215,13 +207,13 @@ class Dimensions():
 
         A = 90 - 45 - math.sqrt((left_cam_angle_to_right_point)**2)
         B = 90 - 45 - math.sqrt((right_cam_angle_to_left_point)**2)
-        print("ab: ",left_cam_angle_to_right_point,right_cam_angle_to_left_point)
+        # print("ab: ",left_cam_angle_to_right_point,right_cam_angle_to_left_point)
         c = dist_betw_cams
 
         a,b,c,A,B,C = solve(c=c, A=A*degree, B=B*degree)
         self.b = b
 
-        print(a,b)
+        # print(a,b)
 
     def width(self): # front / left camera
         image_properties = self.left_properties.properties()
@@ -234,12 +226,13 @@ class Dimensions():
         A = 90 - self.positive(right)
         B = 90 - self.positive(left)
         b = self.b
-        print(f"C: {C}, A: {A}, B: {B}, b:{b}")
+        # print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
         self.triangle_height = math.sin(A)*b
 
-        print(c)
+        # print(c)
+        self.object_width = c
         return c
 
     def depth(self): # length
@@ -253,10 +246,11 @@ class Dimensions():
         A = 90 - self.positive(right)
         B = 90 - self.positive(left)
         b = self.b
-        print(f"C: {C}, A: {A}, B: {B}, b:{b}")
+        # print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
-        print("depth: ",c)
+        # print("depth: ",c)
+        self.object_depth = c
         return c
           
     
@@ -271,23 +265,84 @@ class Dimensions():
         
         angle_sum = self.positive(angle1) + self.positive(angle2)   
         
-
-
         return
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
+    def call(self, alpha, beta, kernel_i, kernel_size, C):
+        left_path = "./captured_images/left.jpg"
+        right_path = "./captured_images/right.jpg"
+        # beta = 48
+        # kernel_i = 2
+        # kernel_size = 4
+        # C = 4
+        self.left_properties = Mask(left_path, "Left", alpha/100, beta-100, kernel_i, kernel_size, C-10) #front
+        self.right_properties = Mask(right_path, "Right", alpha/100, beta-100, kernel_i, kernel_size, C-10) #side
+        return
     
     def main(self):
-        self.common_point()
-        width = self.width()
-        can_width = 5.93
-        accuracy = width/can_width
-        print(f"Accuracy: {accuracy}%")
-        depth = self.depth()
-        accuracy_depth = can_width/depth
-        print(f"Accuracy: {accuracy_depth}%")
-        self.height()
+        start_time = time.time()
+        iteration = 0
+        accuracy_arr = {}
+        closest = 0
+        min_diff = 100000000
+
+        for alpha in range(1, 300, 100): #/100
+            for beta in range(0, 200, 100): #-100
+                for kernel_size in range(3,7):
+                    for kernel_iterations in range(1,5):
+                        for C in range(0,20) : #-10   
+                            try:
+                                iteration += 1
+                                self.call(alpha, beta, kernel_size, kernel_iterations, C)
+                                self.common_point()
+                                width = self.width()
+                                can_width = 5.93
+                                accuracy_w = width/can_width
+                                # print(f"Accuracy: {accuracy_w}%")
+                                depth = self.depth()
+                                accuracy_d = can_width/depth
+                                # print(f"Accuracy: {accuracy_d}%")
+                                avg = (accuracy_w+accuracy_d)/2
+                                print(f"Average accuracy for iteration {iteration} is: {avg}")
+                                diff = self.positive(avg - 1)
+                                if diff < min_diff:
+                                    min_diff = diff
+                                    best_index = iteration
+                                    width = self.object_width
+                                    depth = self.object_depth
+                                    accuracy_arr = {iteration: avg}
+                                    alpha_arr = {iteration: alpha}
+                                    beta_arr = {iteration: beta}
+                                    kernel_size_arr = {iteration: kernel_size}
+                                    kernel_iterations_arr = {iteration: kernel_iterations}
+                                    C_arr = {iteration: C}
+                            except:
+                                #accuracy_arr = {iteration: 0}
+                                print(f"Iteration {iteration} failed")
+        end_time1 = time.time()
+        print(f"Time elapsed 1: {end_time1-start_time}")
+        print(width)
+        print(depth)
+        print(alpha_arr)
+        print(beta_arr)
+        print(kernel_iterations_arr)
+        print(kernel_size_arr)
+        print(C_arr)
         
+        
+        
+        # print(accuracy_arr)
+        # closest = accuracy_arr[1]
+        # min_diff = self.positive(accuracy_arr[0] - 1)
+        # for i in range(len(accuracy_arr)):
+        #     diff = self.positive(accuracy_arr[i] - 1)
+        #     if diff < min_diff:
+        #         min_diff = diff
+        #         best_index = i
+        # end_time2 = time.time()
+        # print(f"time elapsed 2: {end_time2-start_time}")
+        print(f"Most accurate reading is index: {best_index}, with an accuracy of {accuracy_arr[best_index]}")
+
 
 
 
