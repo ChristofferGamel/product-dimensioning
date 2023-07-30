@@ -9,6 +9,7 @@ class Tools():
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
+        self.image = self.ResizeWithAspectRatio(self.image, height=700)
         self.contrastTool()
 
     def contrastTool(self):
@@ -24,25 +25,25 @@ class Tools():
         def update_contrast(_):
             nonlocal alpha, beta, k_iterations, k_size, blocksize, C
 
-            alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 127.0
+            alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 100.0
             beta = cv2.getTrackbarPos('beta', 'Contrast') - 100
             k_size = cv2.getTrackbarPos('kernel_size', 'Contrast')
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
             blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
-            C = cv2.getTrackbarPos('C', 'Contrast')
+            C = cv2.getTrackbarPos('C', 'Contrast') - 10
             print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}")
 
         cv2.namedWindow("Contrast")
         
-        cv2.createTrackbar('alpha', "Contrast", 0, 127, update_contrast) #[0,127]
+        cv2.createTrackbar('alpha', "Contrast", 0, 300, update_contrast) #[0,127]
         cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
         cv2.createTrackbar('kernel_size', "Contrast", 0, 10, update_contrast) 
         cv2.createTrackbar('kernel_iterations', "Contrast", 0, 10, update_contrast)
         cv2.createTrackbar('blocksize', "Contrast", 0, 20, update_contrast) 
-        cv2.createTrackbar('C', "Contrast", 0, 10, update_contrast)
+        cv2.createTrackbar('C', "Contrast", 0, 20, update_contrast) #-10
 
         while True:
-            contrast = cv2.convertScaleAbs(self.image, alpha=alpha, beta=beta)
+            contrast = cv2.convertScaleAbs(self.image, alpha=alpha, beta=beta-100)
             gray = cv2.cvtColor(contrast, cv2.COLOR_BGR2GRAY)
             gray_8bit = cv2.convertScaleAbs(gray)
             th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
@@ -88,11 +89,11 @@ class Tools():
         
         contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
                                             
-        # draw contours on the original image
         
-        largest_contour = max(contours, key=cv2.contourArea)
-        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
+        
         try:
+            largest_contour = max(contours, key=cv2.contourArea)
+            contours_without_largest = [contour for contour in contours if contour is not largest_contour]
             second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
             self.find_extremes(second_largest_contour)
             cv2.line(self.image_copy, (self.max_x,self.min_y), (self.max_x,self.max_y), (255, 0, 0), 3)
@@ -100,7 +101,8 @@ class Tools():
             cv2.line(self.image_copy, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
             cv2.line(self.image_copy, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
         except:
-            print("Max hit")
+            #print("Max hit")
+            pass
         
         cv2.drawContours(self.image_copy, contours, -1, (0, 255, 0), 2, cv2.LINE_AA)
 

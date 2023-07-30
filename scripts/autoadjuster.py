@@ -172,7 +172,7 @@ class Dimensions():
 
     def common_point(self):
         # Image properties:
-        dist_betw_cams = 40.54
+        dist_betw_cams = 70.1
         self.left_image_properties = self.left_properties.properties()
         self.right_image_properties = self.right_properties.properties()
         # print("l/r")

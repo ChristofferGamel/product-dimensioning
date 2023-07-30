@@ -12,6 +12,7 @@ class Mask():
         # Image properties
         
         self.image = cv2.imread(image_path)
+        self.image = self.ResizeWithAspectRatio(self.image, height=700)
         self.image_name = image_name
         self.alpha_v = 0
         self.beta_v = 0
@@ -22,10 +23,11 @@ class Mask():
         self.camera_angle = 78 #degrees
 
         # Image adjustments:
-        self.alpha = 0.4645669291338583
-        self.beta = 48
-        self.kernel_iterations = 2
-        self.kernel_size = 4
+        self.alpha = 0.82#2.01#201/100#0.4645669291338583
+        self.beta = -99#48
+        self.kernel_iterations = 1
+        self.kernel_size = 3
+        self.C = 3
 
         self.final_image()
 
@@ -70,7 +72,7 @@ class Mask():
         self.max_y = 0
         self.min_y = self.image_height
         self.min_x = self.image_width
-        print(f"Height: {self.image_height}, Width: {self.image_width}")
+        # print(f"Height: {self.image_height}, Width: {self.image_width}")
         
         for m_x in range(len(list)):
             if(list[m_x][0][0] > self.max_x):
@@ -92,10 +94,10 @@ class Mask():
 
 
 
-        print("Max x set: ",self.max_x_set)
-        print("Max y set: ",self.max_y_set)
-        print("Min x set: ",self.min_x_set)
-        print("min y set: ",self.min_y_set)
+        # print("Max x set: ",self.max_x_set)
+        # print("Max y set: ",self.max_y_set)
+        # print("Min x set: ",self.min_x_set)
+        # print("min y set: ",self.min_y_set)
     
     def angle(self, orientation): # angle from leftmost fov to r or l edge
         if orientation=="l": #left edge of image
@@ -137,8 +139,23 @@ class Mask():
                 "x_max_set":self.max_x_set,
                 "cam_fov":self.camera_angle}
         return dict
+    def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
+        dim = None
+        (h, w) = image.shape[:2]
+
+        if width is None and height is None:
+            return image
+        if width is None:
+            r = height / float(h)
+            dim = (int(w * r), height)
+        else:
+            r = width / float(w)
+            dim = (width, int(h * r))
+
+        return cv2.resize(image, dim, interpolation=inter)
     
     def final_image(self):
+        
         contrasted = self.contrast(self.image, self.alpha, self.beta)
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
@@ -173,33 +190,27 @@ class Dimensions():
 
     def common_point(self):
         # Image properties:
-        dist_betw_cams = 70.05
+        dist_betw_cams = 70.1
         self.left_image_properties = self.left_properties.properties()
         self.right_image_properties = self.right_properties.properties()
-        print("l/r")
 
         self.left_image_width = self.left_image_properties["image_width"]
         self.right_image_width = self.right_image_properties["image_width"]
-        print("l/r: Width:",self.left_image_width, self.right_image_width)
         
         self.left_center = self.left_image_width / 2
         self.right_center = self.right_image_width / 2
-        print("l/r: Center:",self.left_center, self.right_center)
         
         
         self.left_fov = self.left_image_properties["cam_fov"]
         self.right_fov = self.right_image_properties["cam_fov"]
-        print("l/r FOV: ",self.left_fov,self.right_fov)
 
         # Contoured values
         self.left_cam_min_x = self.left_image_properties["x_min_set"][0]
         self.left_cam_max_x = self.left_image_properties["x_max_set"][0]
-        print("left_max: ",self.left_cam_max_x)
 
 
         self.right_cam_min_x = self.right_image_properties["x_min_set"][0]
         self.right_cam_max_x = self.right_image_properties["x_max_set"][0]
-        print("right_min: ",)
 
         
         # Angles
@@ -246,7 +257,7 @@ class Dimensions():
         A = 90 - self.positive(right)
         B = 90 - self.positive(left)
         b = self.b
-        print(f"C: {C}, A: {A}, B: {B}, b:{b}")
+        #print(f"C: {C}, A: {A}, B: {B}, b:{b}")
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
         print("depth: ",c)
