@@ -5,7 +5,7 @@ import numpy as np
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/right.jpg"
+        image_path = "./captured_images/r.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -31,11 +31,11 @@ class Tools():
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
             blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
             C = cv2.getTrackbarPos('C', 'Contrast') - 10
-            print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}")
+            print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}, C: {C}")
 
         cv2.namedWindow("Contrast")
         
-        cv2.createTrackbar('alpha', "Contrast", 0, 300, update_contrast) #[0,127]
+        cv2.createTrackbar('alpha', "Contrast", 0, 300, update_contrast) 
         cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
         cv2.createTrackbar('kernel_size', "Contrast", 0, 10, update_contrast) 
         cv2.createTrackbar('kernel_iterations', "Contrast", 0, 10, update_contrast)
@@ -43,16 +43,11 @@ class Tools():
         cv2.createTrackbar('C', "Contrast", 0, 20, update_contrast) #-10
 
         while True:
-            contrast = cv2.convertScaleAbs(self.image, alpha=alpha, beta=beta-100)
-            gray = cv2.cvtColor(contrast, cv2.COLOR_BGR2GRAY)
-            gray_8bit = cv2.convertScaleAbs(gray)
-            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
-            kernel = np.ones((k_size,k_size),np.uint8)
-            er = cv2.erode(th2,kernel,iterations = k_iterations)
-            ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+            contrasted = self.contrast(self.image, alpha, beta)
+            thresh = self.thresholding(contrasted, C)
+            eroded = self.erosion(thresh, k_iterations, k_size)
             self.image_copy = self.image.copy()
-            #resize_c = self.ResizeWithAspectRatio(self.image_copy, width=300)
-            contoured = self.contour(thresh)
+            contoured = self.contour(eroded)
             cv2.imshow("Contrast", contoured)
 
         
@@ -61,6 +56,23 @@ class Tools():
         
         cv2.destroyAllWindows()
     
+    def contrast(self, image, alpha, beta):
+        ret = cv2.convertScaleAbs(image, alpha=alpha, beta=beta-100)
+        return ret
+    
+    def thresholding(self, image, C):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_8bit = cv2.convertScaleAbs(gray)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
+        return th2
+    
+    def erosion(self, image, kernel_size, kernel_iterations):
+        kernel = np.ones((kernel_size,kernel_size),np.uint8)
+        er = cv2.erode(image,kernel,iterations = kernel_iterations)
+        ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+        return er
+    
+   
     def find_extremes(self, list):
         self.max_x = 0
         self.max_y = 0
@@ -85,11 +97,10 @@ class Tools():
             if list[mi_x][0][0] < self.min_x:
                 self.min_x = list[mi_x][0][0]
                 self.min_x_set = list[mi_x][0]
+    
+    
     def contour(self, image):
-        
         contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-                                            
-        
         
         try:
             largest_contour = max(contours, key=cv2.contourArea)
@@ -100,11 +111,11 @@ class Tools():
             cv2.line(self.image_copy, (self.min_x,self.max_y), (self.max_x,self.max_y), (255, 0, 0), 3)
             cv2.line(self.image_copy, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
             cv2.line(self.image_copy, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
+            cv2.drawContours(self.image_copy, contours, -1, (0, 255, 0), 2, cv2.LINE_AA)
         except:
-            #print("Max hit")
             pass
         
-        cv2.drawContours(self.image_copy, contours, -1, (0, 255, 0), 2, cv2.LINE_AA)
+        
 
         for contour in contours:
             # Approximate the contour with a polygon

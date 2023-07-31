@@ -23,11 +23,11 @@ class Mask():
         self.camera_angle = 78 #degrees
 
         # Image adjustments:
-        self.alpha = 0.82#2.01#201/100#0.4645669291338583
-        self.beta = -99#48
-        self.kernel_iterations = 1
-        self.kernel_size = 3
-        self.C = 3
+        self.alpha =2 #0.82#2.01#201/100#0.4645669291338583
+        self.beta = 10
+        self.kernel_iterations = 8
+        self.kernel_size = 1
+        self.C = 4
 
         self.final_image()
 
@@ -177,8 +177,8 @@ class Mask():
 
 class Dimensions():
     def __init__(self) -> None:
-        left_path = "./captured_images/monster_left.jpg"
-        right_path = "./captured_images/monster_right.jpg"
+        left_path = "./captured_images/3k.jpg"
+        right_path = "./captured_images/4k.jpg"
         self.left_properties = Mask(left_path, "Left") #front
         self.right_properties = Mask(right_path, "Right") #side
         
