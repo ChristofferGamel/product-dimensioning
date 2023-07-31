@@ -5,7 +5,7 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./pictures/frank.jpg"
+        image_path = "./pictures/KLFA.jpg"
         self.image = cv2.imread(image_path)
         self.alpha_v = 0
         self.beta_v = 0
@@ -18,10 +18,11 @@ class Mask():
         self.camera_height = 10 #cm
 
         # Image adjustments:
-        self.alpha = 0.5905511811023622
-        self.beta = -79
-        self.kernel_size = 4
+        self.alpha = 0.82
+        self.beta = -99
+        self.kernel_size = 1
         self.kernel_iterations = 3
+        self.c = 3
         
 
         self.show()
@@ -33,7 +34,7 @@ class Mask():
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray_8bit = cv2.convertScaleAbs(gray)
-        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, self.c)
         return th2
 
     def erosion(self, image):

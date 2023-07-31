@@ -177,8 +177,8 @@ class Mask():
 
 class Dimensions():
     def __init__(self) -> None:
-        left_path = "./captured_images/left.jpg"
-        right_path = "./captured_images/right.jpg"
+        left_path = "./captured_images/monster_left.jpg"
+        right_path = "./captured_images/monster_right.jpg"
         self.left_properties = Mask(left_path, "Left") #front
         self.right_properties = Mask(right_path, "Right") #side
         
