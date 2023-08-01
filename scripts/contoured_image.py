@@ -5,7 +5,7 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/3k.jpg"
+        image_path = "./captured_images/fuck.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]

@@ -25,8 +25,8 @@ class Mask():
         # Image adjustments:
         self.alpha = 0.45 #0.82#2.01#201/100#0.4645669291338583
         self.beta = -82
-        self.kernel_iterations = 1
         self.kernel_size = 5
+        self.kernel_iterations = 1
         self.C = 1
 
         self.final_image()
