@@ -8,11 +8,11 @@ from picamera import PiCamera
 fli = ["auto","off","50hz","60hz"]
 awb = ["off","auto",
        "sun","cloud",
-       "shade","tungtsten", 
+       "shade","tungsten", 
        "fluorescent", "incandescent", 
        "flash", "horizon", "greyworld"]
 exp = ["auto","night","nightpreview",
-       "backlight", "spotlight","sports"
+       "backlight", "spotlight","sports",
        "snow", "beach", "verylong",
        "fixedfps","antishake", "fireworks"]
 
