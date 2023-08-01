@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 class Mask():
-    def __init__(self, image_path, image_name)-> None:
+    def __init__(self, image_path, image_name, alpha, beta, kernel_iterations, kernel_size, C)-> None:
         # Image properties
         
         self.image = cv2.imread(image_path)
@@ -18,11 +18,11 @@ class Mask():
         self.camera_angle = 78 #degrees
 
         # Image adjustments:
-        self.alpha =2 #0.82#2.01#201/100#0.4645669291338583
-        self.beta = 10
-        self.kernel_iterations = 8
-        self.kernel_size = 1
-        self.C = 4
+        self.alpha = alpha #0.82#2.01#201/100#0.4645669291338583
+        self.beta = beta
+        self.kernel_iterations = kernel_iterations
+        self.kernel_size = kernel_size
+        self.C = C
 
         self.final_image()
 
@@ -43,23 +43,32 @@ class Mask():
     
     def contour(self, image):
         contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-        
-        con = self.image.copy() 
-        cv2.drawContours(con, contours, 3, (0, 255, 0), 3)
-        
-        largest_contour = max(contours, key=cv2.contourArea)
-        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
-        second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
-        # print(second_largest_contour)
-        self.find_extremes(second_largest_contour)
-
         image_with_polygon = self.image.copy() 
-        cv2.line(image_with_polygon, (self.max_x,self.min_y), (self.max_x,self.max_y), (0, 255, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.max_y), (self.max_x,self.max_y), (0, 255, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.min_x,self.max_y), (0, 255, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (0, 255, 0), 3)
-        cv2.drawContours(image_with_polygon, second_largest_contour, -1, (0, 255, 0), thickness=2)
-        
+        try:
+            con = self.image.copy() 
+            cv2.drawContours(con, contours, 3, (0, 255, 0), 3)
+            
+            largest_contour = max(contours, key=cv2.contourArea)
+            contours_without_largest = [contour for contour in contours if contour is not largest_contour]
+            second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
+            # print(second_largest_contour)
+            self.find_extremes(second_largest_contour)
+
+            
+            cv2.line(image_with_polygon, (self.max_x,self.min_y), (self.max_x,self.max_y), (0, 255, 0), 3)
+            cv2.line(image_with_polygon, (self.min_x,self.max_y), (self.max_x,self.max_y), (0, 255, 0), 3)
+            cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.min_x,self.max_y), (0, 255, 0), 3)
+            cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (0, 255, 0), 3)
+            cv2.drawContours(image_with_polygon, second_largest_contour, -1, (0, 255, 0), thickness=2)
+        except:
+            pass
+        for contour in contours:
+            # Approximate the contour with a polygon
+            epsilon = 0.14 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+
+            # Draw the polygon
+            cv2.polylines(self.image_copy, [approx], True, (0, 255, 0), 2)
         return image_with_polygon
     
     def find_extremes(self, list):

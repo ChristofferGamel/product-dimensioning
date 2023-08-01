@@ -23,11 +23,11 @@ class Mask():
         self.camera_angle = 78 #degrees
 
         # Image adjustments:
-        self.alpha =2 #0.82#2.01#201/100#0.4645669291338583
-        self.beta = 10
-        self.kernel_iterations = 8
-        self.kernel_size = 1
-        self.C = 4
+        self.alpha = 0.45 #0.82#2.01#201/100#0.4645669291338583
+        self.beta = -82
+        self.kernel_iterations = 1
+        self.kernel_size = 5
+        self.C = 1
 
         self.final_image()
 
@@ -65,6 +65,13 @@ class Mask():
         cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (0, 255, 0), 3)
         cv2.drawContours(image_with_polygon, second_largest_contour, -1, (0, 255, 0), thickness=2)
         
+        for contour in contours:
+            # Approximate the contour with a polygon
+            epsilon = 0.14 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+
+            # Draw the polygon
+            cv2.polylines(image_with_polygon, [approx], True, (0, 255, 0), 2)
         return image_with_polygon
     
     def find_extremes(self, list):

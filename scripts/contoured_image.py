@@ -5,18 +5,18 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/ss.jpg"
+        image_path = "./captured_images/3k.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
         # Image adjustments:
-        self.alpha = 0.68
-        self.beta = (-90)
-        self.kernel_size = 2
-        self.kernel_iterations = 2
-        self.C = 3
+        self.alpha = 0.45
+        self.beta = -82
+        self.kernel_size = 5
+        self.kernel_iterations = 1
+        self.C = 2
         
         self.show()
 

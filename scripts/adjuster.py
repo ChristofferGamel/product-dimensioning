@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
+from image_processor import Mask
 
 
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/r.jpg"
+        image_path = "./captured_images/3k.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -13,6 +14,7 @@ class Tools():
         self.contrastTool()
 
     def contrastTool(self):
+        image_path = "./captured_images/r.jpg"
         alpha = 2
         beta = 10
         k_size = 1
@@ -23,23 +25,21 @@ class Tools():
 
 
         def update_contrast(_):
-            nonlocal alpha, beta, k_iterations, k_size, blocksize, C
+            nonlocal alpha, beta, k_iterations, k_size, C
 
             alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 100.0
             beta = cv2.getTrackbarPos('beta', 'Contrast') - 100
             k_size = cv2.getTrackbarPos('kernel_size', 'Contrast')
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
-            blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
             C = cv2.getTrackbarPos('C', 'Contrast') - 10
             print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}, C: {C}")
 
         cv2.namedWindow("Contrast")
-        
         cv2.createTrackbar('alpha', "Contrast", 0, 300, update_contrast) 
         cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
         cv2.createTrackbar('kernel_size', "Contrast", 0, 10, update_contrast) 
         cv2.createTrackbar('kernel_iterations', "Contrast", 0, 10, update_contrast)
-        cv2.createTrackbar('blocksize', "Contrast", 0, 20, update_contrast) 
+        
         cv2.createTrackbar('C', "Contrast", 0, 20, update_contrast) #-10
 
         while True:
