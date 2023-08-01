@@ -28,7 +28,7 @@ for fli_i in range(len(fli)):
             ss = 2000
             name = f"ss{ss}ISO{iso}ex{exp[exp_i]}fli{fli[fli_i]}awb{awb[awb_i]}"
             line = f"raspistill -ss {ss} -ISO {iso} -ex {exp[exp_i]} -fli {fli[fli_i]} -awb {awb[awb_i]} -o {name}.jpg"
-            if os.exists(line):
+            if os.path.exists(f"./{line}"):
                 print(f"Index: {index} already exists")
                 pass
             else:
