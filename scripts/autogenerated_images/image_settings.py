@@ -18,16 +18,16 @@ exp = ["auto","night","nightpreview",
 
 index = 0
 
-for awbgains in range(15,20): #/10
-    for fli_i in range(len(fli)):
-        for awb_i in range(len(awb)):
-            for exp_i in range(len(exp)):
-                index += 1
-                iso = 500
-                ss = 2500
-                name = f"ss{ss}ISO{iso}ex{exp[exp_i]}fli{fli[fli_i]}awb{awb[awb_i]}awbgains{awbgains}"
-                line = f"raspistill -ss {ss} -ISO {iso} -ex {exp[exp_i]} -fli {fli[fli_i]} -awb {awb[awb_i]} --awbgains {awbgains/10} -o {name}.jpg"
-                print(f"Index: {index}, Image: ",name)
-                print(f"Index: {index}, Command: {line}")
-                subprocess.call(line, shell=True)
+
+for fli_i in range(len(fli)):
+    for awb_i in range(len(awb)):
+        for exp_i in range(len(exp)):
+            index += 1
+            iso = 500
+            ss = 2500
+            name = f"ss{ss}ISO{iso}ex{exp[exp_i]}fli{fli[fli_i]}awb{awb[awb_i]}"
+            line = f"raspistill -ss {ss} -ISO {iso} -ex {exp[exp_i]} -fli {fli[fli_i]} -awb {awb[awb_i]}-o {name}.jpg"
+            print(f"Index: {index}, Image: ",name)
+            print(f"Index: {index}, Command: {line}")
+            subprocess.call(line, shell=True)
 
