@@ -1,5 +1,6 @@
 import subprocess
 from picamera import PiCamera
+import os
 
 
 # ss 1800-4000, 100 incr
@@ -27,7 +28,11 @@ for fli_i in range(len(fli)):
             ss = 2000
             name = f"ss{ss}ISO{iso}ex{exp[exp_i]}fli{fli[fli_i]}awb{awb[awb_i]}"
             line = f"raspistill -ss {ss} -ISO {iso} -ex {exp[exp_i]} -fli {fli[fli_i]} -awb {awb[awb_i]} -o {name}.jpg"
-            print(f"Index: {index}, Image: ",name)
-            print(f"Index: {index}, Command: {line}")
-            subprocess.call(line, shell=True)
+            if os.exists(line):
+                print(f"Index: {index} already exists")
+                pass
+            else:
+                print(f"Index: {index}, Image: ",name)
+                print(f"Index: {index}, Command: {line}")
+                subprocess.call(line, shell=True)
 
