@@ -168,7 +168,20 @@ class Dimensions():
     
     def positive(self,num):
         return (math.sqrt((num)**2))
-
+    
+    def min_y(self):
+        self.left_image_properties = self.left_properties.properties()
+        return self.left_image_properties["y_min_set"][1]
+    def max_y(self):
+        self.left_image_properties = self.left_properties.properties()
+        return self.left_image_properties["y_max_set"][1]
+    def min_x(self):
+        self.left_image_properties = self.left_properties.properties()
+        return self.left_image_properties["x_min_set"][0]
+    def max_x(self):
+        self.left_image_properties = self.left_properties.properties()
+        return self.left_image_properties["x_max_set"][0]
+    
 
     def common_point(self):
         # Image properties:
@@ -269,7 +282,7 @@ class Dimensions():
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
     def call(self, alpha, beta, kernel_i, kernel_size, C):
-        left_path = "./captured_images/left.jpg"
+        left_path = "./captured_images/ss7650ISO100.jpg"
         right_path = "./captured_images/right.jpg"
         # beta = 48
         # kernel_i = 2
@@ -286,6 +299,11 @@ class Dimensions():
         closest = 0
         magn = 100000000
 
+        min_x_goal = 414
+        min_y_goal = 75
+        max_x_goal = 610
+        max_y_goal = 586
+
         for alpha in range(1, 300, 100): #/100
             for beta in range(0, 200, 100): #-100
                 for kernel_size in range(3,7):
@@ -294,26 +312,43 @@ class Dimensions():
                             try:
                                 iteration += 1
                                 self.call(alpha, beta, kernel_size, kernel_iterations, C)
-                                self.common_point()
-                                object_width = self.width()
-                                can_width = 5.93
-                                can_depth = 5.93
-                                accuracy_w = object_width/can_width
+                                #self.common_point()
+                                
+                                # object_width = self.width()
+                                # can_width = 5.93
+                                # can_depth = 5.93
+                                # accuracy_w = object_width/can_width
                                 # print(f"Accuracy: {accuracy_w}%")
-                                object_depth = self.depth()
-                                accuracy_d = object_depth/can_depth
-                                # print(f"Accuracy: {accuracy_d}%")
-                                avg = (accuracy_w+accuracy_d)/2
-                                print(f"Average accuracy for iteration {iteration} is: {avg}")
-                                #diff = self.positive(avg - 1)
-                                diff_w = self.positive(accuracy_w-1)
-                                diff_d = self.positive(accuracy_d-1)
-                                acc_vector = [diff_w,diff_d]
+                                # object_depth = self.depth()
+                                # accuracy_d = object_depth/can_depth
+                                
+                                # avg = (accuracy_w+accuracy_d)/2
+                                min_x = self.min_x()
+                                max_x = self.max_x()
+                                min_y = self.min_y()
+                                max_y = self.max_y()
+
+
+                                
+                                avg_min_x = min_x-min_x_goal
+                                avg_max_x = max_x-max_x_goal
+                                avg_min_y = min_y-min_y_goal
+                                avg_max_y = max_y-max_y_goal
+
+                                avg = (avg_min_x + avg_max_x + avg_min_y + avg_max_y)/4
+
+
+
+                                print(f"Average diff for iteration {iteration} is: {avg}")
+                                
+                                # diff_w = self.positive(accuracy_w-1)
+                                # diff_d = self.positive(accuracy_d-1)
+                                acc_vector = [avg_min_x,avg_max_x,avg_min_y,avg_max_y]
                                 vector_magnitude = math.sqrt(sum(i**2 for i in acc_vector))
                                 if vector_magnitude < magn:
                                     magn = vector_magnitude
-                                    final_d = object_depth
-                                    final_w = object_width
+                                    # final_depth = object_depth
+                                    # final_width = object_width
                                     best_index = iteration
                                     #width = self.object_width
                                     #depth = self.object_depth
@@ -328,27 +363,16 @@ class Dimensions():
                                 print(f"Iteration {iteration} failed")
         end_time1 = time.time()
         print(f"Time elapsed 1: {end_time1-start_time}")
-        print(final_d)
-        print(final_w)
+        # print(final_depth)
+        # print(final_width)
         print(alpha_arr)
         print(beta_arr)
         print(kernel_iterations_arr)
         print(kernel_size_arr)
         print(C_arr)
         
-        
-        
-        # print(accuracy_arr)
-        # closest = accuracy_arr[1]
-        # min_diff = self.positive(accuracy_arr[0] - 1)
-        # for i in range(len(accuracy_arr)):
-        #     diff = self.positive(accuracy_arr[i] - 1)
-        #     if diff < min_diff:
-        #         min_diff = diff
-        #         best_index = i
-        # end_time2 = time.time()
-        # print(f"time elapsed 2: {end_time2-start_time}")
-        print(f"Most accurate reading is index: {best_index}, with an accuracy of {accuracy_arr[best_index]}")
+
+        print(f"Most accurate reading is index: {best_index}, with a diff of {accuracy_arr[best_index]}")
 
 
 
