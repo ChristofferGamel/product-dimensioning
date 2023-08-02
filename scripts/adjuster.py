@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/ss7650ISO100.jpg"
+        image_path = "./captured_images/baggage_carrier1.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
