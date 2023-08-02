@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/3k.jpg"
+        image_path = "./captured_images/ss7650ISO100.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -25,12 +25,13 @@ class Tools():
 
 
         def update_contrast(_):
-            nonlocal alpha, beta, k_iterations, k_size, C
+            nonlocal alpha, beta, k_iterations, k_size, C, blocksize
 
             alpha = cv2.getTrackbarPos('alpha', 'Contrast') / 100.0
             beta = cv2.getTrackbarPos('beta', 'Contrast') - 100
             k_size = cv2.getTrackbarPos('kernel_size', 'Contrast')
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
+            blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
             C = cv2.getTrackbarPos('C', 'Contrast') - 10
             print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}, C: {C}")
 
@@ -39,12 +40,12 @@ class Tools():
         cv2.createTrackbar('beta', "Contrast", 0, 200, update_contrast) #[-100,100]
         cv2.createTrackbar('kernel_size', "Contrast", 0, 10, update_contrast) 
         cv2.createTrackbar('kernel_iterations', "Contrast", 0, 10, update_contrast)
-        
-        cv2.createTrackbar('C', "Contrast", 0, 20, update_contrast) #-10
+        cv2.createTrackbar('blocksize', "Contrast", 1, 21, update_contrast)
+        cv2.createTrackbar('C', "Contrast", 1, 21, update_contrast) #-10
 
         while True:
             contrasted = self.contrast(self.image, alpha, beta)
-            thresh = self.thresholding(contrasted, C)
+            thresh = self.thresholding(contrasted, blocksize, C)
             eroded = self.erosion(thresh, k_iterations, k_size)
             self.image_copy = self.image.copy()
             contoured = self.contour(eroded)
@@ -57,13 +58,17 @@ class Tools():
         cv2.destroyAllWindows()
     
     def contrast(self, image, alpha, beta):
-        ret = cv2.convertScaleAbs(image, alpha=alpha, beta=beta-100)
+        ret = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
         return ret
     
-    def thresholding(self, image, C):
+    def thresholding(self, image, blocksize, C):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray_8bit = cv2.convertScaleAbs(gray)
-        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
+        try:
+            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, blocksize, C)
+        except:
+            print("failed with blocksize: ",blocksize)
+            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
         return th2
     
     def erosion(self, image, kernel_size, kernel_iterations):
