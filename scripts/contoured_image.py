@@ -5,18 +5,19 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/fuck.jpg"
+        image_path = "./captured_images/ss7650ISO100.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
         # Image adjustments:
-        self.alpha = 0.45
-        self.beta = -82
-        self.kernel_size = 5
-        self.kernel_iterations = 1
-        self.C = 2
+        self.alpha = 1.5         # contrast
+        self.beta = -100           # contrast brightness
+        self.kernel_size = 6        # erosion
+        self.kernel_iterations = 3  # erosion
+        self.blocksize = 19
+        self.C = 7                  # thresholding
         
         self.show()
 
@@ -27,7 +28,7 @@ class Mask():
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray_8bit = cv2.convertScaleAbs(gray)
-        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, self.C)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
         return th2
 
     def erosion(self, image):
@@ -112,6 +113,13 @@ class Mask():
         
         print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
+            cv2.imshow("contrasted", contrasted)
+            
+            cv2.imshow("thresholded", thresholded)
+            cv2.imwrite("thresholded.jpg", thresholded)
+            cv2.imshow("eroded", eroded)
+            
+            
             cv2.imshow("contoured", contoured)
             key = cv2.waitKey(1) & 0xFF
 
