@@ -5,17 +5,17 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/helmet.jpg"
+        image_path = "./captured_images/baggage_carrier.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
         # Image adjustments:
-        self.alpha = 1.5         # contrast
+        self.alpha = 1.502         # contrast
         self.beta = -100           # contrast brightness
-        self.kernel_size = 6        # erosion
-        self.kernel_iterations = 3  # erosion
+        self.kernel_size = 4        # erosion
+        self.kernel_iterations = 4  # erosion
         self.blocksize = 19
         self.C = 7                  # thresholding
         
@@ -116,11 +116,13 @@ class Mask():
             cv2.imshow("contrasted", contrasted)
             
             cv2.imshow("thresholded", thresholded)
-            cv2.imwrite("thresholded.jpg", thresholded)
+            
             cv2.imshow("eroded", eroded)
             
             
             cv2.imshow("contoured", contoured)
+            cv2.imwrite("contoured.jpg", contoured)
+            
             key = cv2.waitKey(1) & 0xFF
 
             
