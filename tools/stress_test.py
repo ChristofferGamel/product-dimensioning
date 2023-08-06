@@ -7,11 +7,7 @@ from picamera2 import Picamera2, Preview
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./tools/test-python.jpg"
-        self.image = cv2.imread(image_path)
-        self.image_height = self.image.shape[0]
-        self.image_width = self.image.shape[1]
-        self.image = self.ResizeWithAspectRatio(self.image, height=700)
+        
 
         # Image adjustments:
         self.alpha = 1.502          # contrast
@@ -21,6 +17,14 @@ class Mask():
         self.blocksize = 19         # thresholding
         self.C = 7                  # thresholding
         self.cam()
+
+        image_path = "./tools/test-python.jpg"
+        self.image = cv2.imread(image_path)
+        self.image_height = self.image.shape[0]
+        self.image_width = self.image.shape[1]
+        self.image = self.ResizeWithAspectRatio(self.image, height=700)
+
+        
         self.show()
     
     def cam(self):
