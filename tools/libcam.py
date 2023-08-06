@@ -1,9 +1,13 @@
-import time
+import time, libcamera
 from picamera2 import Picamera2, Preview
 
 picam = Picamera2()
 
-config = picam.create_preview_configuration()
+
+
+config = picam.create_preview_configuration(main={"size": (1920, 1080)})
+config["transform"] = libcamera.Transform(hflip=1, vflip=1)
+picam.configure(config)
 picam.configure(config)
 
 picam.start_preview(Preview.QTGL)
