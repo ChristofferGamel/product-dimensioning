@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/baggage_carrier.jpg"
+        image_path = "./tools/test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -33,7 +33,7 @@ class Tools():
             k_iterations = cv2.getTrackbarPos('kernel_iterations', 'Contrast')
             blocksize = cv2.getTrackbarPos('blocksize', 'Contrast')
             C = cv2.getTrackbarPos('C', 'Contrast') - 10
-            print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}, C: {C}")
+            print(f"Alpha: {alpha}, Beta: {beta}, kernel size: {k_size}, Kernel iterations: {k_iterations}, Blocksize: {blocksize} C: {C}")
 
         cv2.namedWindow("Contrast")
         cv2.createTrackbar('alpha', "Contrast", 0, 3000, update_contrast) 
