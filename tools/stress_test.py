@@ -18,7 +18,7 @@ class Mask():
         self.C = 9                  # thresholding
         
         self.cam()
-
+        self.filename = "monster.jpg"
         image_path = "./tools/test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
@@ -142,7 +142,7 @@ class Mask():
             
             
             cv2.imshow("contoured", contoured)
-            cv2.imwrite("contoured.jpg", contoured)
+            cv2.imwrite("contoured_images/"+self.filename, contoured)
             
             key = cv2.waitKey(1) & 0xFF
 
