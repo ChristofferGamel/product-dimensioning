@@ -143,7 +143,7 @@ class Mask():
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
-        unique_value = int(time.time())
+        unique_value = time.time()
         orig = f"OR_{unique_value}.jpg"
         cont = f"CO_{unique_value}.jpg"
         
