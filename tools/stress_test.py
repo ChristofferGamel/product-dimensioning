@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+import time
 import time, libcamera
 from picamera2 import Picamera2, Preview
 
@@ -142,18 +143,18 @@ class Mask():
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
+        unique_value = int(time.time())
+        orig = f"OR_{unique_value}.jpg"
+        cont = f"CO_{unique_value}.jpg"
+        
+        
         
         print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
-            cv2.imshow("contrasted", contrasted)
-            
-            cv2.imshow("thresholded", thresholded)
-            
-            cv2.imshow("eroded", eroded)
-            
-            
+            cv2.imwrite("tools/stress_test_run/"+orig, self.image)
+            cv2.imwrite("tools/stress_test_run/"+cont, contoured)
             cv2.imshow("contoured", contoured)
-            cv2.imwrite("contoured_images/"+self.filename, contoured)
+            
             
             key = cv2.waitKey(1) & 0xFF
 
