@@ -18,7 +18,7 @@ picam.start()
 time.sleep(2)
 
 # Capture the image with specific settings
-picam.capture_file("test-python3.jpg")
+picam.capture_file("monster.jpg")
 
 picam.close()
 

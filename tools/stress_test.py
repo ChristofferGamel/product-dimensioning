@@ -31,7 +31,13 @@ class Mask():
     def cam(self):
         picam = Picamera2()
         # picam.create_preview_configuration()
-        config = picam.create_preview_configuration(main={"size": (1920, 1080)}, controls={"ExposureTime": 2000, "AnalogueGain": 1.0})
+        controls = {"ExposureTime": 1400, 
+                    "AnalogueGain": 1.0, 
+                    "Brightness": 0,
+                    "Sharpness":2,
+                    "AwbMode":5
+                    }
+        config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
         #config2 = picam.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
         picam.configure(config)
         time.sleep(2)
