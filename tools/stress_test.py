@@ -10,12 +10,12 @@ class Mask():
         
 
         # Image adjustments:
-        self.alpha = 1.503          # contrast
-        self.beta = -100            # contrast brightness
-        self.kernel_size = 2        # erosion
-        self.kernel_iterations = 4  # erosion
+        self.alpha = 0.98             # contrast
+        self.beta = 2.5999999999999943           # contrast brightness
+        self.kernel_size = 1        # erosion
+        self.kernel_iterations = 8  # erosion
         self.blocksize = 21         # thresholding
-        self.C = 9                  # thresholding
+        self.C = 3                  # thresholding
         
         self.cam()
 
