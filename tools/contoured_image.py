@@ -5,7 +5,7 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./tools/test-python2.jpg"
+        image_path = "./captured_images/test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -27,15 +27,17 @@ class Mask():
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray_8bit = cv2.convertScaleAbs(gray)
-        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
-        return th2
+        #gray_8bit = cv2.convertScaleAbs(gray)
+        #th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+        bit = cv2.convertScaleAbs(thresh)
+        return bit
 
     def erosion(self, image):
         kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
         er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
-        ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
-        return thresh
+        #ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+        return er
     
     def contour(self, image):
         image_with_polygon = self.image.copy()
