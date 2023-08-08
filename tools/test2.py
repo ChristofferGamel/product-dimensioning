@@ -1,27 +1,38 @@
-
-# import the opencv library
 import cv2
-  
-  
-# define a video capture object
-vid = cv2.VideoCapture(0)
-  
-while(True):
-      
-    # Capture the video frame
-    # by frame
-    ret, frame = vid.read()
-  
-    # Display the resulting frame
-    cv2.imshow('frame', frame)
-      
-    # the 'q' button is set as the
-    # quitting button you may use any
-    # desired button of your choice
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-  
-# After the loop release the cap object
-vid.release()
-# Destroy all the windows
+import numpy as np
+def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    return cv2.resize(image, dim, interpolation=inter)
+
+# Load the image
+image = cv2.imread('./captured_images/helmet.jpg')
+image = ResizeWithAspectRatio(image, height=700)
+
+# Convert the image to grayscale
+
+#gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+ret, thresh = cv2.threshold(img_gray, 150, 255, cv2.THRESH_BINARY)
+
+cv2.imshow('Binary image', thresh)
+cv2.waitKey(0)
+cv2.imwrite('image_thres1.jpg', thresh)
 cv2.destroyAllWindows()
+
+
+
+
+

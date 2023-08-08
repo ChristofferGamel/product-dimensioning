@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./tools/test-python2.jpg"
+        image_path = "./captured_images/helmet.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -69,12 +69,13 @@ class Tools():
         except:
             print("failed with blocksize: ",blocksize)
             th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
+        #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
         return th2
     
     def erosion(self, image, kernel_size, kernel_iterations):
         kernel = np.ones((kernel_size,kernel_size),np.uint8)
         er = cv2.erode(image,kernel,iterations = kernel_iterations)
-        ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+        #ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
         return er
     
    
