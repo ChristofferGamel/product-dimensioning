@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./captured_images/helmet.jpg"
+        image_path = "./captured_images/test-python3.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -15,12 +15,12 @@ class Tools():
 
     def contrastTool(self):
         image_path = "./captured_images/r.jpg"
-        alpha = 2
-        beta = 10
+        alpha = 1.255
+        beta = -100
         k_size = 1
-        k_iterations = 8
-        blocksize = 11
-        C = 4
+        k_iterations = 4
+        blocksize = 5
+        C = 2
 
 
 

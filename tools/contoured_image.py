@@ -5,19 +5,19 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/test-python.jpg"
+        image_path = "./captured_images/test-python3.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
         # Image adjustments:
-        self.alpha = 1.503          # contrast
+        self.alpha = 1.255          # contrast
         self.beta = -100            # contrast brightness
-        self.kernel_size = 2        # erosion
+        self.kernel_size = 2       # erosion
         self.kernel_iterations = 4  # erosion
-        self.blocksize = 21         # thresholding
-        self.C = 9                  # thresholding
+        self.blocksize = 5         # thresholding
+        self.C = 2                  # thresholding
         
         self.show()
 
@@ -27,11 +27,11 @@ class Mask():
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        #gray_8bit = cv2.convertScaleAbs(gray)
-        #th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
-        ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-        bit = cv2.convertScaleAbs(thresh)
-        return bit
+        gray_8bit = cv2.convertScaleAbs(gray)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+        #bit = cv2.convertScaleAbs(thresh)
+        return th2
 
     def erosion(self, image):
         kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
@@ -113,7 +113,7 @@ class Mask():
         eroded = self.erosion(thresholded)
         contoured = self.contour(eroded)
         
-        print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
+        print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, Blocksize {self.blocksize} C: {self.C}")
         while True:
             cv2.imshow("contrasted", contrasted)
             
