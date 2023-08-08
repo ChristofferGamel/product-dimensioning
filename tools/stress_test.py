@@ -10,12 +10,12 @@ class Mask():
         
 
         # Image adjustments:
-        self.alpha = 1.255             # contrast
-        self.beta = -100           # contrast brightness
-        self.kernel_size = 2        # erosion
-        self.kernel_iterations = 4  # erosion
-        self.blocksize = 5         # thresholding
-        self.C = 2                  # thresholding
+        self.alpha = 1.45             # contrast
+        self.beta = -66.8           # contrast brightness
+        self.kernel_size = 3        # erosion
+        self.kernel_iterations = 9  # erosion
+        self.blocksize = 9         # thresholding
+        self.C = 5                  # thresholding
         
         self.cam()
         self.filename = "hand_+_monster.jpg"
