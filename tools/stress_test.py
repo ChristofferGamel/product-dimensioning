@@ -18,7 +18,7 @@ class Mask():
         self.C = 7                  # thresholding
         self.cam()
 
-        image_path = "./tools/test-python.jpg"
+        image_path = "test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -29,13 +29,18 @@ class Mask():
     
     def cam(self):
         picam = Picamera2()
-        config = picam.create_preview_configuration(main={"size": (1920, 1080)})
-        config["transform"] = libcamera.Transform(hflip=0, vflip=0)
+        # picam.create_preview_configuration()
+        config = picam.create_preview_configuration(main={"size": (1920, 1080)}, controls={"ExposureTime": 2000, "AnalogueGain": 1.0})
+        #config2 = picam.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
         picam.configure(config)
-        picam.start_preview(Preview.QTGL)
+        time.sleep(2)
+
         picam.start()
         time.sleep(2)
+
+        # Capture the image with specific settings
         picam.capture_file("test-python.jpg")
+
         picam.close()
 
 
