@@ -18,7 +18,7 @@ class Mask():
         self.C = 3                  # thresholding
         
         self.cam()
-
+        self.filename = "hand_+_monster.jpg"
         image_path = "test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
