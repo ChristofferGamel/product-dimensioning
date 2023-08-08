@@ -10,12 +10,13 @@ class Mask():
         
 
         # Image adjustments:
-        self.alpha = 1.502          # contrast
+        self.alpha = 1.503          # contrast
         self.beta = -100            # contrast brightness
-        self.kernel_size = 4        # erosion
+        self.kernel_size = 2        # erosion
         self.kernel_iterations = 4  # erosion
-        self.blocksize = 19         # thresholding
-        self.C = 7                  # thresholding
+        self.blocksize = 21         # thresholding
+        self.C = 9                  # thresholding
+        
         self.cam()
 
         image_path = "test-python.jpg"
@@ -24,7 +25,7 @@ class Mask():
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
-        
+
         self.show()
     
     def cam(self):
@@ -146,7 +147,7 @@ class Mask():
             
             
             cv2.imshow("contoured", contoured)
-            cv2.imwrite("contoured.jpg", contoured)
+            cv2.imwrite("contoured_images/"+self.filename, contoured)
             
             key = cv2.waitKey(1) & 0xFF
 

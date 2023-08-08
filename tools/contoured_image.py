@@ -5,19 +5,19 @@ import math
 class Mask():
     def __init__(self) -> None:
         # Image properties
-        image_path = "./captured_images/cup.jpg"
+        image_path = "./tools/test-python.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
         # Image adjustments:
-        self.alpha = 1.502          # contrast
+        self.alpha = 1.503          # contrast
         self.beta = -100            # contrast brightness
-        self.kernel_size = 4        # erosion
+        self.kernel_size = 2        # erosion
         self.kernel_iterations = 4  # erosion
-        self.blocksize = 19         # thresholding
-        self.C = 7                  # thresholding
+        self.blocksize = 21         # thresholding
+        self.C = 9                  # thresholding
         
         self.show()
 
