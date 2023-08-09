@@ -27,11 +27,14 @@ class Mask():
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray_8bit = cv2.convertScaleAbs(gray)
-        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        #gray_8bit = cv2.convertScaleAbs(gray)
+        #th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        
+        blur = cv2.GaussianBlur(gray,(5,5),0)
+        ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
         #bit = cv2.convertScaleAbs(thresh)
-        return th2
+        return th3
 
     def erosion(self, image):
         kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
