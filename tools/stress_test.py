@@ -146,13 +146,15 @@ class Mask():
         unique_value = time.time()
         orig = f"OR_{unique_value}.jpg"
         cont = f"CO_{unique_value}.jpg"
+        cv2.imwrite("tools/stress_test_run/"+orig, self.image)
+        cv2.imwrite("tools/stress_test_run/"+cont, contoured)
+        print(f"File names: {orig}, {cont}")
         
         
         
         print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
-            cv2.imwrite("tools/stress_test_run/"+orig, self.image)
-            cv2.imwrite("tools/stress_test_run/"+cont, contoured)
+            
             cv2.imshow("contoured", contoured)
             
             
