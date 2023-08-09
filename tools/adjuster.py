@@ -6,7 +6,7 @@ from image_processor import Mask
 
 class Tools():
     def __init__(self) -> None:
-        image_path = "./test-python3.jpg"
+        image_path = "./tools/monster.jpg"
         self.image = cv2.imread(image_path)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
@@ -63,14 +63,16 @@ class Tools():
     
     def thresholding(self, image, blocksize, C):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray_8bit = cv2.convertScaleAbs(gray)
-        try:
-            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, blocksize, C)
-        except:
-            print("failed with blocksize: ",blocksize)
-            th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
+        # gray_8bit = cv2.convertScaleAbs(gray)
+        # try:
+        #     th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, blocksize, C)
+        # except:
+        #     print("failed with blocksize: ",blocksize)
+        #     th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
+        blur = cv2.GaussianBlur(gray,(5,5),0)
+        ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-        return th2
+        return th3
     
     def erosion(self, image, kernel_size, kernel_iterations):
         kernel = np.ones((kernel_size,kernel_size),np.uint8)
