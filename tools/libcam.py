@@ -18,7 +18,7 @@ picam.start()
 time.sleep(2)
 
 # Capture the image with specific settings
-picam.capture_file("tape.jpg")
+picam.capture_file("red.jpg")
 
 picam.close()
 

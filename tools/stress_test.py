@@ -11,8 +11,8 @@ class Mask():
         
 
         # Image adjustments:
-        self.alpha = 1.45             # contrast
-        self.beta = -66.8           # contrast brightness
+        self.alpha = 1.2             # contrast
+        self.beta = 50           # contrast brightness
         self.kernel_size = 3        # erosion
         self.kernel_iterations = 9  # erosion
         self.blocksize = 9         # thresholding
@@ -32,10 +32,10 @@ class Mask():
     def cam(self):
         picam = Picamera2()
         # picam.create_preview_configuration()
-        controls = {"ExposureTime": 1400, 
-                    "AnalogueGain": 1.0, 
-                    "Brightness": 0,
-                    "Sharpness":2,
+        controls = {"ExposureTime": 1600, 
+                    "AnalogueGain": 1.2, 
+                    "Brightness": 0.08,
+                    "Sharpness":3,
                     "AwbMode":5
                     }
         config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
@@ -68,60 +68,35 @@ class Mask():
         kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
         er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
         ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+        
         return thresh
     
-    def contour(self, image):
-        image_with_polygon = self.image.copy()
-        contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-        
-        largest_contour = max(contours, key=cv2.contourArea)
-        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
-        second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
-        self.find_extremes(second_largest_contour)        
-        cv2.line(image_with_polygon, (self.max_x,self.min_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.max_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
-        cv2.drawContours(image_with_polygon, contours, -1, (0, 255, 0), thickness=2)
-        
-        for contour in contours:
-            # Approximate the contour with a polygon
-            epsilon = 0.14 * cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, epsilon, True)
+    def extreme_points(self, binary_image):
+        # Find the contours of the object
+        contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-            # Draw the polygon
-            cv2.polylines(image_with_polygon, [approx], True, (0, 255, 0), 2)
-        # cv2.drawContours(image_with_polygon, second_largest_contour, -1, (255, 0, 0), thickness=2)
-        
-        return image_with_polygon
-    
-    def find_extremes(self, list):
-        self.max_x = 0
-        self.max_y = 0
-        self.min_y = self.image_height
-        self.min_x = self.image_width
-        print(f"Height: {self.image_height}, Width: {self.image_width}")
-        
-        for m_x in range(len(list)):
-            if(list[m_x][0][0] > self.max_x):
-                self.max_x = list[m_x][0][0]
-                self.max_x_set = list[m_x][0]
-        for m_y in range(len(list)):
-            if(list[m_y][0][1] > self.max_y):
-                self.max_y = list[m_y][0][1]
-                self.max_y_set = list[m_y][0]
+        boxes = []
+        i = 0
+        for c in contours:
+            # here we are ignoring first counter because
+            # findContours function detects whole image as shape
+            if i == 0:
+                i = 1
+                continue
 
-        for mi_y in range(len(list)):
-            if list[mi_y][0][1] < self.min_y:
-                self.min_y = list[mi_y][0][1]
-                self.min_y_set = list[mi_y][0]
-        for mi_x in range(len(list)):
-            if list[mi_x][0][0] < self.min_x:
-                self.min_x = list[mi_x][0][0]
-                self.min_x_set = list[mi_x][0]
+            (x, y, w, h) = cv2.boundingRect(c)
+            boxes.append([x, y, x + w, y + h])
+
+        boxes = np.asarray(boxes)
+        left, top = np.min(boxes, axis=0)[:2]
+        right, bottom = np.max(boxes, axis=0)[2:]
+
+        return left, top, right, bottom
     
+    def draw_points_box(self, original_image, x1, y1, x2, y2):
+        copy = original_image.copy()
+        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5)  
    
-        
     def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
         dim = None
         (h, w) = image.shape[:2]
@@ -142,20 +117,24 @@ class Mask():
         contrasted = self.contrast(self.image)
         thresholded = self.thresholding(contrasted)
         eroded = self.erosion(thresholded)
-        contoured = self.contour(eroded)
+        y1, y2, x1, x2 = self.extreme_points(eroded)
+        draw = self.draw_points_box(self.image, y1, y2, x1, x2)
+
+        #contoured = self.contour(eroded)
         unique_value = time.time()
         orig = f"OR_{unique_value}.jpg"
         cont = f"CO_{unique_value}.jpg"
         cv2.imwrite("tools/stress_test_run/"+orig, self.image)
-        cv2.imwrite("tools/stress_test_run/"+cont, contoured)
+        cv2.imwrite("tools/stress_test_run/"+cont, draw)
         print(f"File names: {orig}, {cont}")
         
         
         
         print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
-            
-            cv2.imshow("contoured", contoured)
+            cv2.imshow("1", contrasted)
+            cv2.imshow("c", thresholded)
+            cv2.imshow("contoured", draw)
             
             
             key = cv2.waitKey(1) & 0xFF
