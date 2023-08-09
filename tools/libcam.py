@@ -3,7 +3,7 @@ from picamera2 import Picamera2, Preview
 
 picam = Picamera2()
 # picam.create_preview_configuration()
-controls = {"ExposureTime": 1800, 
+controls = {"ExposureTime": 1600, 
             "AnalogueGain": 1.0, 
             "Brightness": 0.08,
             "Sharpness":3,
