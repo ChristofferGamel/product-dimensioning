@@ -12,14 +12,15 @@ ret2,th2 = cv.threshold(img,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
 blur = cv.GaussianBlur(img,(5,5),0)
 ret3,th3 = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
 # plot all the images and their histograms
-cv.imwrite("th3", th3)
+# cv.imread(th3)
+# cv.imwrite("th3", th3)
 
-# while True:
-#     #cv.imshow("th1", th1)
-#     #cv.imshow("th2", th2)
-#     cv.imshow("th3", th3)
-
-#     if cv.waitKey(1) & 0xFF == ord('q'):
-#         break
+while True:
+    #cv.imshow("th1", th1)
+    #cv.imshow("th2", th2)
+    cv.imshow("th3", th3)
+    
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
         
-# cv.destroyAllWindows()
+cv.destroyAllWindows()
