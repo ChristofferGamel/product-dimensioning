@@ -4,7 +4,7 @@ from picamera2 import Picamera2, Preview
 picam = Picamera2()
 # picam.create_preview_configuration()
 controls = {"ExposureTime": 1600, 
-            "AnalogueGain": 1.0, 
+            "AnalogueGain": 1.2, 
             "Brightness": 0.08,
             "Sharpness":3,
             "AwbMode":5
@@ -18,7 +18,7 @@ picam.start()
 time.sleep(2)
 
 # Capture the image with specific settings
-picam.capture_file("monster.jpg")
+picam.capture_file("tape.jpg")
 
 picam.close()
 
