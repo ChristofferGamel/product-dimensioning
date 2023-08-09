@@ -6,7 +6,7 @@ picam = Picamera2()
 controls = {"ExposureTime": 1800, 
             "AnalogueGain": 1.0, 
             "Brightness": 0.08,
-            "Sharpness":2,
+            "Sharpness":3,
             "AwbMode":5
             }
 config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
