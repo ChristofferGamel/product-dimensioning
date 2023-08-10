@@ -48,8 +48,13 @@ class Tools():
             thresh = self.thresholding(contrasted, blocksize, C)
             eroded = self.erosion(thresh, k_iterations, k_size)
             self.image_copy = self.image.copy()
-            contoured = self.contour(eroded)
-            cv2.imshow("Contrast", contoured)
+            y1, y2, x1, x2 = self.extreme_points(eroded)
+            draw = self.draw_points_box(self.image, y1, y2, x1, x2)
+
+
+
+            # contoured = self.contour(eroded)
+            cv2.imshow("Contrast", draw)
 
         
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -77,8 +82,8 @@ class Tools():
     def erosion(self, image, kernel_size, kernel_iterations):
         kernel = np.ones((kernel_size,kernel_size),np.uint8)
         er = cv2.erode(image,kernel,iterations = kernel_iterations)
-        #ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
-        return er
+        ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
+        return thresh
     
    
     def find_extremes(self, list):
@@ -105,6 +110,32 @@ class Tools():
             if list[mi_x][0][0] < self.min_x:
                 self.min_x = list[mi_x][0][0]
                 self.min_x_set = list[mi_x][0]
+    
+    def extreme_points(self, binary_image):
+        # Find the contours of the object
+        contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        boxes = []
+        i = 0
+        for c in contours:
+            # here we are ignoring first counter because
+            # findContours function detects whole image as shape
+            if i == 0:
+                i = 1
+                continue
+
+            (x, y, w, h) = cv2.boundingRect(c)
+            boxes.append([x, y, x + w, y + h])
+
+        boxes = np.asarray(boxes)
+        left, top = np.min(boxes, axis=0)[:2]
+        right, bottom = np.max(boxes, axis=0)[2:]
+
+        return left, top, right, bottom
+    
+    def draw_points_box(self, original_image, x1, y1, x2, y2):
+        copy = original_image.copy()
+        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5) 
     
     
     def contour(self, image):

@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 import math
+from matplotlib import pyplot as plt
+from rembg import remove
+
 
 class Mask():
     def __init__(self) -> None:
@@ -13,7 +16,7 @@ class Mask():
 
         # Image adjustments:
         self.alpha = 1.45          # contrast
-        self.beta = -66.8            # contrast brightness
+        self.beta = -100            # contrast brightness
         self.kernel_size = 3       # erosion
         self.kernel_iterations = 9  # erosion
         self.blocksize = 9         # thresholding
@@ -24,6 +27,10 @@ class Mask():
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         return contrast
+    
+    def remove_bg(self, image):
+        removed_bg = remove(image)
+        return removed_bg
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -111,29 +118,40 @@ class Mask():
 
 
     def show(self):
+        print("begun")
         contrasted = self.contrast(self.image)
-        thresholded = self.thresholding(contrasted)
-        eroded = self.erosion(thresholded)
-        contoured = self.contour(eroded)
+        removed_bg = self.remove_bg(contrasted)
+        thresholded = self.thresholding(removed_bg)
+        #eroded = self.erosion(removed_bg)
+        contoured = self.contour(thresholded)
         
-        print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, Blocksize {self.blocksize} C: {self.C}")
-        while True:
-            cv2.imshow("contrasted", contrasted)
+        titles = ['Original Image','Contrasted', 'BG improved','thresholded','contoured']
+        images = [self.image, contrasted, removed_bg, thresholded, contoured]
+        for i in range(5):
+            plt.subplot(2,3,i+1),plt.imshow(images[i],'gray',vmin=0,vmax=255)
+            plt.title(titles[i])
+            plt.xticks([]),plt.yticks([])
+        plt.show()
+        
+        
+        # print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, Blocksize {self.blocksize} C: {self.C}")
+        # while True:
+        #     cv2.imshow("contrasted", contrasted)
             
-            cv2.imshow("thresholded", thresholded)
+        #     cv2.imshow("thresholded", thresholded)
             
-            cv2.imshow("eroded", eroded)
+        #     cv2.imshow("eroded", eroded)
             
             
-            cv2.imshow("contoured", contoured)
-            cv2.imwrite("contoured.jpg", contoured)
+        #     cv2.imshow("contoured", contoured)
+        #     cv2.imwrite("contoured.jpg", contoured)
             
-            key = cv2.waitKey(1) & 0xFF
+        #     key = cv2.waitKey(1) & 0xFF
 
             
-            if key == ord("q"):
-                break
-        cv2.destroyAllWindows()
+        #     if key == ord("q"):
+        #         break
+        # cv2.destroyAllWindows()
 
     def nothing(self, x):
         pass
