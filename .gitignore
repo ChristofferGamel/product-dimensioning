@@ -1,4 +1,4 @@
 /.vscode
 /venv
-/scripts/test.py
+/tools/test_scripts
 
