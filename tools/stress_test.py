@@ -4,6 +4,8 @@ import math
 import time
 import time, libcamera
 from picamera2 import Picamera2, Preview
+from rembg import remove
+
 
 class Mask():
     def __init__(self) -> None:
@@ -57,6 +59,10 @@ class Mask():
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         return contrast
+    
+    def remove_bg(self, image):
+        removed_bg = remove(image)
+        return removed_bg
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
