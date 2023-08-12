@@ -6,9 +6,9 @@ from rembg import remove
 
 
 class Contoured():
-    def __init__(self, image_path) -> None:
+    def __init__(self) -> None:
         # Image properties
-        self.image = cv2.imread(image_path)
+        #self.image = image_path#cv2.imread(image_path)
         self.alpha = 1.45          # contrast
         self.beta = -100            # contrast brightness
         self.kernel_size = 3       # erosion
@@ -16,10 +16,9 @@ class Contoured():
         self.blocksize = 9         # thresholding
         self.C = 5                  # thresholding
 
-        self.image_height = self.image.shape[0]
-        self.image_width = self.image.shape[1]
         
-        self.main()
+        
+        # self.main()
 
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
@@ -81,20 +80,23 @@ class Contoured():
                 self.min_x = list[mi_x][0][0]
                 self.min_x_set = list[mi_x][0]
 
-    def main(self):
-        contrasted = self.contrast(self.image)
+    def main(self, image):
+        self.image = image
+        self.image_height = image.shape[0]
+        self.image_width = image.shape[1]
+        contrasted = self.contrast(image)
         removed_bg = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed_bg)
         contoured = self.contour(thresholded)
-        
-        while True:
-            cv2.imshow("contoured", contoured)
-            key = cv2.waitKey(1) & 0xFF
+        print(contoured)
+        # while True:
+        #     cv2.imshow("contoured", contoured)
+        #     key = cv2.waitKey(1) & 0xFF
 
             
-            if key == ord("q"):
-                break
-        cv2.destroyAllWindows()
+        #     if key == ord("q"):
+        #         break
+        # cv2.destroyAllWindows()
         return contoured
     
         

@@ -3,158 +3,28 @@ import numpy as np
 import math
 from matplotlib import pyplot as plt
 from rembg import remove
+from contour import Contoured
 
 
 class Mask():
     def __init__(self) -> None:
-        # Image properties
         image_path = "./tools/monster.jpg"
-        self.image = cv2.imread(image_path)
-        self.image_height = self.image.shape[0]
-        self.image_width = self.image.shape[1]
-        self.image = self.ResizeWithAspectRatio(self.image, height=700)
+        image = cv2.imread(image_path)
+        self.show(image)
 
-        # Image adjustments:
-        self.alpha = 1.45          # contrast
-        self.beta = -100            # contrast brightness
-        self.kernel_size = 3       # erosion
-        self.kernel_iterations = 9  # erosion
-        self.blocksize = 9         # thresholding
-        self.C = 5                  # thresholding
-        
-        self.show()
-
-    def contrast(self, image):
-        contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
-        return contrast
     
-    def remove_bg(self, image):
-        removed_bg = remove(image)
-        return removed_bg
-    
-    def thresholding(self, image):
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        #gray_8bit = cv2.convertScaleAbs(gray)
-        #th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
-        
-        blur = cv2.GaussianBlur(gray,(5,5),0)
-        ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-        #bit = cv2.convertScaleAbs(thresh)
-        return th3
 
-    def erosion(self, image):
-        kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
-        er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
-        #ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
-        return er
-    
-    def contour(self, image):
-        image_with_polygon = self.image.copy()
-        contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+    def show(self, image):
+        class_init = Contoured()
+        contoured = contoured.main(image)
         
-        largest_contour = max(contours, key=cv2.contourArea)
-        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
-        second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
-        self.find_extremes(second_largest_contour)        
-        cv2.line(image_with_polygon, (self.max_x,self.min_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.max_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
-        cv2.drawContours(image_with_polygon, contours, -1, (0, 255, 0), thickness=2)
-        
-        for contour in contours:
-            # Approximate the contour with a polygon
-            epsilon = 0.14 * cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, epsilon, True)
-
-            # Draw the polygon
-            cv2.polylines(image_with_polygon, [approx], True, (0, 255, 0), 2)
-        # cv2.drawContours(image_with_polygon, second_largest_contour, -1, (255, 0, 0), thickness=2)
-        
-        return image_with_polygon
-    
-    def find_extremes(self, list):
-        self.max_x = 0
-        self.max_y = 0
-        self.min_y = self.image_height
-        self.min_x = self.image_width
-        print(f"Height: {self.image_height}, Width: {self.image_width}")
-        
-        for m_x in range(len(list)):
-            if(list[m_x][0][0] > self.max_x):
-                self.max_x = list[m_x][0][0]
-                self.max_x_set = list[m_x][0]
-        for m_y in range(len(list)):
-            if(list[m_y][0][1] > self.max_y):
-                self.max_y = list[m_y][0][1]
-                self.max_y_set = list[m_y][0]
-
-        for mi_y in range(len(list)):
-            if list[mi_y][0][1] < self.min_y:
-                self.min_y = list[mi_y][0][1]
-                self.min_y_set = list[mi_y][0]
-        for mi_x in range(len(list)):
-            if list[mi_x][0][0] < self.min_x:
-                self.min_x = list[mi_x][0][0]
-                self.min_x_set = list[mi_x][0]
-    
-   
-        
-    def ResizeWithAspectRatio(self, image, width=None, height=None, inter=cv2.INTER_AREA):
-        dim = None
-        (h, w) = image.shape[:2]
-
-        if width is None and height is None:
-            return image
-        if width is None:
-            r = height / float(h)
-            dim = (int(w * r), height)
-        else:
-            r = width / float(w)
-            dim = (width, int(h * r))
-
-        return cv2.resize(image, dim, interpolation=inter)
-
-
-    def show(self):
-        print("begun")
-        contrasted = self.contrast(self.image)
-        removed_bg = self.remove_bg(contrasted)
-        thresholded = self.thresholding(removed_bg)
-        #eroded = self.erosion(removed_bg)
-        contoured = self.contour(thresholded)
-        
-        titles = ['Original Image','Contrasted', 'BG improved','thresholded','contoured']
-        images = [self.image, contrasted, removed_bg, thresholded, contoured]
-        for i in range(5):
-            plt.subplot(2,3,i+1),plt.imshow(images[i],'gray',vmin=0,vmax=255)
-            plt.title(titles[i])
-            plt.xticks([]),plt.yticks([])
-        plt.show()
+        while True:
+            cv2.imshow("Contoured", contoured)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                break
+        cv2.destroyAllWindows()
         
         
-        # print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, Blocksize {self.blocksize} C: {self.C}")
-        # while True:
-        #     cv2.imshow("contrasted", contrasted)
-            
-        #     cv2.imshow("thresholded", thresholded)
-            
-        #     cv2.imshow("eroded", eroded)
-            
-            
-        #     cv2.imshow("contoured", contoured)
-        #     cv2.imwrite("contoured.jpg", contoured)
-            
-        #     key = cv2.waitKey(1) & 0xFF
-
-            
-        #     if key == ord("q"):
-        #         break
-        # cv2.destroyAllWindows()
-
-    def nothing(self, x):
-        pass
-
 if __name__ == "__main__":
     app = Mask()
