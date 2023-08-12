@@ -13,8 +13,8 @@ class Mask():
         
 
         # Image adjustments:
-        self.alpha = 1.2             # contrast
-        self.beta = 50           # contrast brightness
+        self.alpha = 1.45             # contrast
+        self.beta = -100           # contrast brightness
         self.kernel_size = 3        # erosion
         self.kernel_iterations = 9  # erosion
         self.blocksize = 9         # thresholding
@@ -121,9 +121,10 @@ class Mask():
 
     def show(self):
         contrasted = self.contrast(self.image)
-        thresholded = self.thresholding(contrasted)
-        eroded = self.erosion(thresholded)
-        y1, y2, x1, x2 = self.extreme_points(eroded)
+        removed = self.remove_bg(contrasted)
+        thresholded = self.thresholding(removed)
+        #eroded = self.erosion(thresholded)
+        y1, y2, x1, x2 = self.extreme_points(thresholded)
         draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
         #contoured = self.contour(eroded)
@@ -139,7 +140,9 @@ class Mask():
         print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
             cv2.imshow("1", contrasted)
+            cv2.imshow("removed", removed)
             cv2.imshow("c", thresholded)
+            # cv2.imshow("e", eroded)
             cv2.imshow("contoured", draw)
             
             
