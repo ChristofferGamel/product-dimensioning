@@ -1,16 +1,27 @@
-from picamera import PiCamera
 import time
+from picamera2 import Picamera2
+import os
 
-class Picture():
-    def __init__(self):
-        self.camera = PiCamera()
-        self.source = "/home/chris/Desktop/autostoreHelpers/captured_images/left.jpg"
-        self.capture()
+class Picture():       
+    def picture(filename):
+        # Path configuration
+        root_absolute_path = os.path.join("/ram/", filename)
+
+        picam = Picamera2()
+        controls = {"ExposureTime": 1600, 
+                    "AnalogueGain": 1.2, 
+                    "Brightness": 0.08,
+                    "Sharpness":3,
+                    "AwbMode":5
+                    }
+        config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
+        picam.configure(config)
         
-    def capture(self):
         time.sleep(2)
-        self.camera.capture(self.source)
-        print("Done.")
+        picam.start()
+        time.sleep(2)
 
-if __name__ == "__main__":
-    app = Picture()
+        picam.capture_file(root_absolute_path)
+
+        picam.close()
+        return root_absolute_path
