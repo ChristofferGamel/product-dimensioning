@@ -13,10 +13,6 @@ class Contoured():
         self.blocksize = 9          # thresholding
         self.C = 5                  # thresholding
 
-        
-        
-        # self.main()
-
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         return contrast
@@ -57,52 +53,6 @@ class Contoured():
         copy = original_image.copy()
         return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5)  
     
-    def contour(self, image):
-        image_with_polygon = self.image.copy()
-        contours, hierarchy = cv2.findContours(image=image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-        
-        largest_contour = max(contours, key=cv2.contourArea)
-        contours_without_largest = [contour for contour in contours if contour is not largest_contour]
-        second_largest_contour = max(contours_without_largest, key=cv2.contourArea)
-        self.find_extremes(second_largest_contour)        
-        cv2.line(image_with_polygon, (self.max_x,self.min_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.max_y), (self.max_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.min_x,self.max_y), (255, 0, 0), 3)
-        cv2.line(image_with_polygon, (self.min_x,self.min_y), (self.max_x,self.min_y), (255, 0, 0), 3)
-        cv2.drawContours(image_with_polygon, contours, -1, (0, 255, 0), thickness=2)
-        
-        for contour in contours:
-            epsilon = 0.14 * cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, epsilon, True)
-            cv2.polylines(image_with_polygon, [approx], True, (0, 255, 0), 2)
-        
-        return image_with_polygon
-    
-    def find_extremes(self, list):
-        self.max_x = 0
-        self.max_y = 0
-        self.min_y = self.image_height
-        self.min_x = self.image_width
-        print(f"Height: {self.image_height}, Width: {self.image_width}")
-        
-        for m_x in range(len(list)):
-            if(list[m_x][0][0] > self.max_x):
-                self.max_x = list[m_x][0][0]
-                self.max_x_set = list[m_x][0]
-        for m_y in range(len(list)):
-            if(list[m_y][0][1] > self.max_y):
-                self.max_y = list[m_y][0][1]
-                self.max_y_set = list[m_y][0]
-
-        for mi_y in range(len(list)):
-            if list[mi_y][0][1] < self.min_y:
-                self.min_y = list[mi_y][0][1]
-                self.min_y_set = list[mi_y][0]
-        for mi_x in range(len(list)):
-            if list[mi_x][0][0] < self.min_x:
-                self.min_x = list[mi_x][0][0]
-                self.min_x_set = list[mi_x][0]
-
     def main(self, image):
         self.image = image
 
@@ -117,6 +67,3 @@ class Contoured():
         draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
         return draw
-    
-        
-        
