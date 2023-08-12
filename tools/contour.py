@@ -8,12 +8,9 @@ from rembg import remove
 class Contoured():
     def __init__(self) -> None:
         # Image properties
-        #self.image = image_path#cv2.imread(image_path)
-        self.alpha = 1.45          # contrast
+        self.alpha = 1.45           # contrast
         self.beta = -100            # contrast brightness
-        self.kernel_size = 3       # erosion
-        self.kernel_iterations = 9  # erosion
-        self.blocksize = 9         # thresholding
+        self.blocksize = 9          # thresholding
         self.C = 5                  # thresholding
 
         
@@ -29,10 +26,36 @@ class Contoured():
         return removed_bg
     
     def thresholding(self, image):
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)       
-        blur = cv2.GaussianBlur(gray,(5,5),0)
-        ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        return th3
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_8bit = cv2.convertScaleAbs(gray)
+        th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        return th2
+    
+    def extreme_points(self, binary_image):
+        # Find the contours of the object
+        contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        boxes = []
+        i = 0
+        for c in contours:
+            # here we are ignoring first counter because
+            # findContours function detects whole image as shape
+            if i == 0:
+                i = 1
+                continue
+
+            (x, y, w, h) = cv2.boundingRect(c)
+            boxes.append([x, y, x + w, y + h])
+
+        boxes = np.asarray(boxes)
+        left, top = np.min(boxes, axis=0)[:2]
+        right, bottom = np.max(boxes, axis=0)[2:]
+
+        return left, top, right, bottom
+    
+    def draw_points_box(self, original_image, x1, y1, x2, y2):
+        copy = original_image.copy()
+        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5)  
     
     def contour(self, image):
         image_with_polygon = self.image.copy()
@@ -82,22 +105,18 @@ class Contoured():
 
     def main(self, image):
         self.image = image
+
         self.image_height = image.shape[0]
         self.image_width = image.shape[1]
+        
         contrasted = self.contrast(image)
         removed_bg = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed_bg)
-        contoured = self.contour(thresholded)
-        print(contoured)
-        # while True:
-        #     cv2.imshow("contoured", contoured)
-        #     key = cv2.waitKey(1) & 0xFF
+        
+        y1, y2, x1, x2 = self.extreme_points(thresholded)
+        draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
-            
-        #     if key == ord("q"):
-        #         break
-        # cv2.destroyAllWindows()
-        return contoured
+        return draw
     
         
         
