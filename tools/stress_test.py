@@ -5,6 +5,7 @@ import time
 import time, libcamera
 from picamera2 import Picamera2, Preview
 from rembg import remove
+import os
 
 
 class Mask():
@@ -15,20 +16,21 @@ class Mask():
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
         
-        self.cam()
-        self.filename = "hand_+_monster.jpg"
-        image_path = "test-python.jpg"
-        self.image = cv2.imread(image_path)
+        path_to_img = self.cam()
+
+        self.image = cv2.imread(path_to_img)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.image = self.ResizeWithAspectRatio(self.image, height=700)
 
-
         self.show()
     
     def cam(self):
+        # Path configuration
+        filename = "cam1.jpg"
+        root_absolute_path = os.path.join("/ram/", filename)
+
         picam = Picamera2()
-        # picam.create_preview_configuration()
         controls = {"ExposureTime": 1600, 
                     "AnalogueGain": 1.2, 
                     "Brightness": 0.08,
@@ -42,9 +44,10 @@ class Mask():
         picam.start()
         time.sleep(2)
 
-        picam.capture_file("test-python.jpg")
+        picam.capture_file(root_absolute_path)
 
         picam.close()
+        return root_absolute_path
 
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
