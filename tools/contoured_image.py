@@ -16,7 +16,7 @@ class Mask():
 
     def show(self, image):
         class_init = Contoured()
-        contoured = contoured.main(image)
+        contoured = class_init.main(image)
         
         while True:
             cv2.imshow("Contoured", contoured)
