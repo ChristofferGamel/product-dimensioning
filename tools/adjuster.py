@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-from image_processor import Mask
-
 
 
 class Tools():
@@ -51,9 +49,6 @@ class Tools():
             y1, y2, x1, x2 = self.extreme_points(eroded)
             draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
-
-
-            # contoured = self.contour(eroded)
             cv2.imshow("Contrast", draw)
 
         
@@ -68,15 +63,8 @@ class Tools():
     
     def thresholding(self, image, blocksize, C):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # gray_8bit = cv2.convertScaleAbs(gray)
-        # try:
-        #     th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, blocksize, C)
-        # except:
-        #     print("failed with blocksize: ",blocksize)
-        #     th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, C)
         blur = cv2.GaussianBlur(gray,(5,5),0)
         ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        #ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
         return th3
     
     def erosion(self, image, kernel_size, kernel_iterations):

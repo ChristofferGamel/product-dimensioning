@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import math
 from matplotlib import pyplot as plt
 from rembg import remove
 from contour import Contoured

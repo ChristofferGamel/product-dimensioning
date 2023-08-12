@@ -1,9 +1,7 @@
 import cv2
 import numpy as np
-import time
 from picamera2 import Picamera2
 from rembg import remove
-import os
 from cam import Picture
 from contour import Contoured
 
