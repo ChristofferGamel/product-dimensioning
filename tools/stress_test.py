@@ -9,16 +9,11 @@ from rembg import remove
 
 class Mask():
     def __init__(self) -> None:
-        # Image properties
-        
-
         # Image adjustments:
-        self.alpha = 1.45             # contrast
+        self.alpha = 1.45          # contrast
         self.beta = -100           # contrast brightness
-        self.kernel_size = 3        # erosion
-        self.kernel_iterations = 9  # erosion
         self.blocksize = 9         # thresholding
-        self.C = 5                  # thresholding
+        self.C = 5                 # thresholding
         
         self.cam()
         self.filename = "hand_+_monster.jpg"
@@ -41,20 +36,15 @@ class Mask():
                     "AwbMode":5
                     }
         config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
-        #config2 = picam.set_controls({"ExposureTime": 10000, "AnalogueGain": 1.0})
         picam.configure(config)
+        
         time.sleep(2)
-
         picam.start()
         time.sleep(2)
 
-        # Capture the image with specific settings
         picam.capture_file("test-python.jpg")
 
         picam.close()
-
-
-
 
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
@@ -69,13 +59,6 @@ class Mask():
         gray_8bit = cv2.convertScaleAbs(gray)
         th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
         return th2
-
-    def erosion(self, image):
-        kernel = np.ones((self.kernel_size,self.kernel_size),np.uint8)
-        er = cv2.erode(image,kernel,iterations = self.kernel_iterations)
-        ret, thresh = cv2.threshold(er, 150, 255, cv2.THRESH_BINARY)
-        
-        return thresh
     
     def extreme_points(self, binary_image):
         # Find the contours of the object
@@ -120,14 +103,14 @@ class Mask():
 
 
     def show(self):
+        # Processing
         contrasted = self.contrast(self.image)
         removed = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed)
-        #eroded = self.erosion(thresholded)
         y1, y2, x1, x2 = self.extreme_points(thresholded)
         draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
-        #contoured = self.contour(eroded)
+        # File saving
         unique_value = time.time()
         orig = f"OR_{unique_value}.jpg"
         cont = f"CO_{unique_value}.jpg"
@@ -135,26 +118,18 @@ class Mask():
         cv2.imwrite("tools/stress_test_run/"+cont, draw)
         print(f"File names: {orig}, {cont}")
         
-        
-        
-        print(f"Alpha: {self.alpha}, Beta: {self.beta}, kernel size: {self.kernel_size}, Kernel iterations: {self.kernel_iterations}, C: {self.C}")
         while True:
-            cv2.imshow("1", contrasted)
-            cv2.imshow("removed", removed)
-            cv2.imshow("c", thresholded)
-            # cv2.imshow("e", eroded)
-            cv2.imshow("contoured", draw)
+            # cv2.imshow("1", contrasted)
+            # cv2.imshow("removed", removed)
+            # cv2.imshow("c", thresholded)
             
+            cv2.imshow("contoured", draw)
             
             key = cv2.waitKey(1) & 0xFF
 
-            
             if key == ord("q"):
                 break
         cv2.destroyAllWindows()
-
-    def nothing(self, x):
-        pass
 
 if __name__ == "__main__":
     app = Mask()
