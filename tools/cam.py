@@ -3,11 +3,11 @@ from picamera2 import Picamera2
 import os
 
 class Picture():       
-    def picture(filename):
+    def picture(filename, cam):
         # Path configuration
         root_absolute_path = os.path.join("/ram/", filename)
 
-        picam = Picamera2()
+        picam = Picamera2(camera_num=cam)
         controls = {"ExposureTime": 1600, 
                     "AnalogueGain": 1.2, 
                     "Brightness": 0.08,
@@ -21,7 +21,7 @@ class Picture():
         picam.start()
         time.sleep(2)
 
-        picam.capture_file(root_absolute_path)
+        picam.capture_file(filename)
 
         picam.close()
         return root_absolute_path
