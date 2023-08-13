@@ -15,19 +15,19 @@ class Mask():
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
         
-        path_to_img = Picture.picture("cam2.jpg")
-        print(path_to_img)
+        # path_to_img = Picture.picture("cam2.jpg")
+        # print(path_to_img)
         
-        self.image = cv2.imread(path_to_img)
-        print(self.image)
+        self.image = cv2.imread("./tools/monster.jpg")
+        # print(self.image)
         self.image_height = self.image.shape[0]
         self.image_width = self.image.shape[1]
         self.show()
 
     def show(self):
 
-        class_init = Contoured()
-        contoured = class_init.main(self.image)
+        class_init = Contoured(self.image)
+        contoured = class_init.contoured()
         
         while True:           
             cv2.imshow("contoured", contoured)

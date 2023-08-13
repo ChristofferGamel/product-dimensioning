@@ -5,12 +5,14 @@ from rembg import remove
 
 
 class Contoured():
-    def __init__(self) -> None:
+    def __init__(self, image) -> None:
         # Image properties
+        self.image = image
         self.alpha = 1.45           # contrast
         self.beta = -100            # contrast brightness
         self.blocksize = 9          # thresholding
         self.C = 5                  # thresholding
+        self.contoured()
 
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
@@ -52,13 +54,13 @@ class Contoured():
         copy = original_image.copy()
         return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5)  
     
-    def main(self, image):
-        self.image = image
-
-        self.image_height = image.shape[0]
-        self.image_width = image.shape[1]
+    def contoured(self):
         
-        contrasted = self.contrast(image)
+
+        self.image_height = self.image.shape[0]
+        self.image_width = self.image.shape[1]
+        
+        contrasted = self.contrast(self.image)
         removed_bg = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed_bg)
         
