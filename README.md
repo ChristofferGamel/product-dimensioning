@@ -40,6 +40,8 @@ and then the packagess are installed as followed:
 `pip install rembg`
 `pip install opencv-python`
 `pip install matplotlib`
+`pip install trianglesolver`
+`right_triangle`
 
 ## Setting up SSH with GIT
 todo
