@@ -42,3 +42,32 @@ and then the packagess are installed as followed:
 `pip install matplotlib`
 
 ## Setting up SSH with GIT
+todo
+
+## Camera setup
+Firstly make sure the cameras are connected securely with the ArduCam Adapter board
+
+Then disable Legacy camera, and enable I2C
+
+`sudo raspi-config`
+
+Navigate to "Interface options"
+
+Firstly disable Legacy camera
+Then enable I2C
+When done, reboot the pi
+`sudo reboot`
+
+## Boot config setup
+To enable the adapter board enter the pi's boot configuration by:
+
+`sudo nano /boot/config.txt`
+
+Find the `camera_auto_detect` And make sure it says `camera_auto_detect=1`
+Next, find the `dtoverlay=vc4-kms-v3`, and change it to:
+`dtoverlay=camera-mux-4port,cam0-imx708,cam1-imx708`
+
+A copy of the config file is placed in the /pi directory
+
+## Dual Camera test
+To test if the cameras are working properly, a test script is located in the /pi directory named: "cam_test.py", and returns t2o images named: "cam0.jpg" and "cam1.jpg"
