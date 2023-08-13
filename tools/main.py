@@ -23,12 +23,19 @@ class Mask():
         # print(self.image)
         # self.image_height = self.image.shape[0]
         # self.image_width = self.image.shape[1]
-        self.show(image_0)
-        self.show(image_1)
+        self.triangulate(image_0, image_1)
+        # self.show(image_0)
+        # self.show(image_1)
+
+    def triangulate(self, left, right):
+        left_image =  Contoured(left)
+        left_properties = left_image.properties()
+        print(left_properties)
+        return
 
     def show(self, image):
-        class_init = Contoured(image)
-        contoured = class_init.contoured()
+        image = Contoured(image)
+        contoured = image.contoured()
         
         while True:           
             cv2.imshow("contoured", contoured)

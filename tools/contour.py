@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from rembg import remove
+import math
 
 
 class Contoured():
@@ -12,6 +13,9 @@ class Contoured():
         self.beta = -100            # contrast brightness
         self.blocksize = 9          # thresholding
         self.C = 5                  # thresholding
+
+        self.image_height = self.image.shape[0]
+        self.image_width = self.image.shape[1]
 
         # Camera properties
         self.horizontal_fov = 66 #degrees
@@ -60,7 +64,17 @@ class Contoured():
     def draw_points_box(self, original_image, x1, y1, x2, y2):
         copy = original_image.copy()
         return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5) 
-
+    
+    def deg_to_rad(self, deg):
+        return((deg * math.pi)/180)
+    def rad_to_deg(self, rad):
+        return(rad*(180/math.pi))
+    
+    def calculate_angle(self, point, FOV_x):
+        angle_rad = math.atan((2*point/self.image_width) * FOV_x/self.image_width)
+        angle_deg = self.rad_to_deg(angle_rad)
+        return angle_deg
+    
     def properties(self):
         dict = {"image_width":self.image_width, 
                 "image_height":self.image_height,
@@ -69,15 +83,14 @@ class Contoured():
                 "right":self.right,
                 "bottom":self.bottom,
                 "horizontal_fov":self.horizontal_fov,
-                "vertical_fov":self.vertical_fov}
+                "vertical_fov":self.vertical_fov,
+                "l_angle":self.calculate_angle(self.left, self.horizontal_fov),
+                "r_angle":self.calculate_angle(self.right, self.horizontal_fov)}
         return dict 
     
-    def contoured(self):
-        
-
-        self.image_height = self.image.shape[0]
-        self.image_width = self.image.shape[1]
-        
+    
+    
+    def contoured(self):        
         contrasted = self.contrast(self.image)
         removed_bg = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed_bg)
