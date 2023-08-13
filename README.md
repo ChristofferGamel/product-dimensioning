@@ -77,3 +77,5 @@ A copy of the config file is placed in the /pi directory
 
 ## Dual Camera test
 To test if the cameras are working properly, a test script is located in the /pi directory named: "cam_test.py", and returns t2o images named: "cam0.jpg" and "cam1.jpg"
+
+If any issues occur, perform a reboot, and try again
