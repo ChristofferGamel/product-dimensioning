@@ -12,6 +12,11 @@ class Contoured():
         self.beta = -100            # contrast brightness
         self.blocksize = 9          # thresholding
         self.C = 5                  # thresholding
+
+        # Camera properties
+        self.horizontal_fov = 66 #degrees
+        self.vertical_fov = 41 #degrees
+
         self.contoured()
 
     def contrast(self, image):
@@ -47,12 +52,25 @@ class Contoured():
         boxes = np.asarray(boxes)
         left, top = np.min(boxes, axis=0)[:2]
         right, bottom = np.max(boxes, axis=0)[2:]
+        
+        self.left, self.top, self.right, self.bottom = left, top, right, bottom
 
         return left, top, right, bottom
     
     def draw_points_box(self, original_image, x1, y1, x2, y2):
         copy = original_image.copy()
-        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5)  
+        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5) 
+
+    def properties(self):
+        dict = {"image_width":self.image_width, 
+                "image_height":self.image_height,
+                "left":self.left,
+                "top":self.top,
+                "right":self.right,
+                "bottom":self.bottom,
+                "horizontal_fov":self.horizontal_fov,
+                "vertical_fov":self.vertical_fov}
+        return dict 
     
     def contoured(self):
         

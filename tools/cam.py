@@ -5,7 +5,7 @@ import os
 class Picture():       
     def picture(filename, cam):
         # Path configuration
-        root_absolute_path = os.path.join("/ram/", filename)
+        #root_absolute_path = os.path.join("/ram/", filename)
 
         picam = Picamera2(camera_num=cam)
         controls = {"ExposureTime": 1600, 
@@ -24,4 +24,4 @@ class Picture():
         picam.capture_file(filename)
 
         picam.close()
-        return root_absolute_path
+        return filename
