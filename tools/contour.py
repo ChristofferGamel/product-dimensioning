@@ -71,11 +71,13 @@ class Contoured():
         return(rad*(180/math.pi))
     
     def angle(self, point, fov):
-        image_width = self.image_width
-        C_rad = math.radians(fov)
-        b = image_width / math.tan(C_rad)  
-        a =  point - image_width
-        angle = math.atan(b/a)
+        B = fov/2
+        b = self.image_width/2
+
+        C_rad = math.radians(B)
+        b__1 = b / math.tan(C_rad)  
+        a =  point - b
+        angle = math.atan(b__1/a)
         angle_deg = math.degrees(angle) 
         return 90 - angle_deg
     
