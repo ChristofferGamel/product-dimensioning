@@ -22,6 +22,9 @@ class Contoured():
         self.vertical_fov = 41 #degrees
 
         self.contoured()
+    
+    def __abs__(self):
+        return self.string
 
     def contrast(self, image):
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
@@ -76,7 +79,7 @@ class Contoured():
 
         C_rad = math.radians(B)
         b__1 = b / math.tan(C_rad)  
-        a =  point - b
+        a =  abs(point - b)
         angle = math.atan(b__1/a)
         angle_deg = math.degrees(angle) 
         return 90 - angle_deg

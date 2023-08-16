@@ -1,14 +1,22 @@
+# Packages
 import cv2
 import numpy as np
 from picamera2 import Picamera2
 from rembg import remove
+
+# Files
 from cam import Picture
 from contour import Contoured
+from triangulate import Triangulate
 
 
 
 class Mask():
     def __init__(self) -> None:
+        # Physical setup
+        dist = 42.5                # Distance betweeen cameras
+
+
         # Image adjustments:
         self.alpha = 1.45          # contrast
         self.beta = -100           # contrast brightness
@@ -23,15 +31,28 @@ class Mask():
         # print(self.image)
         # self.image_height = self.image.shape[0]
         # self.image_width = self.image.shape[1]
-        self.triangulate(image_0, image_1)
+        self.triangulate(image_0, image_1, dist)
         # self.show(image_0)
         # self.show(image_1)
 
-    def triangulate(self, left, right):
+    def triangulate(self, left, right, dist):
         left_image =  Contoured(left)
-        left_properties = left_image.properties()
-        print(left_properties)
+        right_image = Contoured(right)
+        self.savefig(left_image.contoured(), "left.jpg")
+        self.savefig(right_image.contoured(), "right.jpg")
+
+        left = left_image.properties()
+        #left_angle = left["r_angle"]
+
+        right = right_image.properties()
+        #right_angle = right["l_angle"]
+        triangulate = Triangulate()
+        w = triangulate.object_size(dist, left, right)
+        print(w)
         return
+    
+    def savefig(self, img, title): # Temporary
+        cv2.imwrite(title, img)
 
     def show(self, image):
         image = Contoured(image)
