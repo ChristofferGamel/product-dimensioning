@@ -13,8 +13,8 @@ class TestTriangulateClass(unittest.TestCase):
         dist = 35.36
 
         a, b = triangulate.object_size(dist, left, right)
-        print(a,b)
-        assert a is not None
+        self.assertAlmostEqual(a, 10, 2)
+        self.assertAlmostEqual(b, 10, 2)
 
     
     def test_case_2(self):
