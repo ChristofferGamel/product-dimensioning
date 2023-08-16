@@ -1,4 +1,5 @@
 from trianglesolver import solve, degree
+import math
 
 
 class Triangulate():
@@ -18,8 +19,9 @@ class Triangulate():
 
         a, b = self.common_point(dist, left_angle, right_angle)
 
-        w = self.width(left_properties, a)
+        w, dist_to_object = self.width(left_properties, a)
         d = self.depth(right_properties, b)
+        h = self.height(left_properties, right_properties, dist_to_object)
         return w, d
 
 
@@ -44,8 +46,8 @@ class Triangulate():
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
 
         depth = c
-        print(depth)
-        return depth
+        height = math.sin(A)*b # Distance to object
+        return depth, height
 
     def depth(self, cam_properties, dist):
         left_angle = abs(cam_properties["l_angle"])
@@ -63,6 +65,9 @@ class Triangulate():
         width = c
         print(width)
         return width
+    
+    def height(self, left_properties, right_properties, dist_to_object):
+        return
     
 
 
