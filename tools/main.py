@@ -14,7 +14,7 @@ from triangulate import Triangulate
 class Mask():
     def __init__(self) -> None:
         # Physical setup
-        dist = 42.5                # Distance betweeen cameras
+        dist = 53.0                # Distance betweeen cameras
 
 
         # Image adjustments:

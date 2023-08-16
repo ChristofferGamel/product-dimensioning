@@ -24,7 +24,10 @@ class Triangulate():
 
 
     def common_point(self, dist, left_angle, right_angle):
-        a,b,c,A,B,C = solve(c=dist, A=left_angle*degree, B=right_angle*degree)
+        A = 45 - left_angle
+        B = 45 - right_angle
+
+        a,b,c,A,B,C = solve(c=dist, A=A*degree, B=B*degree)
         return a,b # a = right cam, b = left cam
     
     def width(self, cam_properties, dist): # Left cam
