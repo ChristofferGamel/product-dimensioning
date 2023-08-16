@@ -70,10 +70,14 @@ class Contoured():
     def rad_to_deg(self, rad):
         return(rad*(180/math.pi))
     
-    def calculate_angle(self, point, FOV_x):
-        angle_rad = math.atan((2*point/self.image_width) * FOV_x/self.image_width)
-        angle_deg = self.rad_to_deg(angle_rad)
-        return angle_deg
+    def angle(self, point, fov):
+        image_width = self.image_width
+        C_rad = math.radians(fov)
+        b = image_width / math.tan(C_rad)  
+        a =  point - image_width
+        angle = math.atan(b/a)
+        angle_deg = math.degrees(angle) 
+        return 90 - angle_deg
     
     def properties(self):
         dict = {"image_width":self.image_width, 
@@ -84,8 +88,8 @@ class Contoured():
                 "bottom":self.bottom,
                 "horizontal_fov":self.horizontal_fov,
                 "vertical_fov":self.vertical_fov,
-                "l_angle":self.calculate_angle(self.left, self.horizontal_fov),
-                "r_angle":self.calculate_angle(self.right, self.horizontal_fov)}
+                "l_angle":self.angle(self.left, self.horizontal_fov),
+                "r_angle":self.angle(self.right, self.horizontal_fov)}
         return dict 
     
     
