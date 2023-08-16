@@ -73,9 +73,9 @@ Find the `camera_auto_detect` And make sure it says `camera_auto_detect=1`
 Next, find the `dtoverlay=vc4-kms-v3`, and change it to:
 `dtoverlay=camera-mux-4port,cam0-imx708,cam1-imx708`
 
-A copy of the config file is placed in the /pi directory
+A working copy of the config file is placed in the /pi directory
 
 ## Dual Camera test
-To test if the cameras are working properly, a test script is located in the /pi directory named: "cam_test.py", and returns t2o images named: "cam0.jpg" and "cam1.jpg"
+To test if the cameras are working properly, a test script is located in the /pi directory named: "cam_test.py", and returns two images named: "cam0.jpg" and "cam1.jpg"
 
 If any issues occur, perform a reboot, and try again
