@@ -94,7 +94,9 @@ class Contoured():
                 "horizontal_fov":self.horizontal_fov,
                 "vertical_fov":self.vertical_fov,
                 "l_angle":self.angle(self.left, self.horizontal_fov),
-                "r_angle":self.angle(self.right, self.horizontal_fov)}
+                "r_angle":self.angle(self.right, self.horizontal_fov),
+                "top_angle":self.angle(self.top, self.vertical_fov),
+                "bottom_angle":self.angle(self.bottom, self.vertical_fov)}
         return dict 
     
     

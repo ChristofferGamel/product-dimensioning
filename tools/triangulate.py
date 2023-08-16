@@ -22,7 +22,7 @@ class Triangulate():
         w, dist_to_object = self.width(left_properties, a)
         d = self.depth(right_properties, b)
         h = self.height(left_properties, right_properties, dist_to_object)
-        return w, d
+        return w, d, h
 
 
     def common_point(self, dist, left_angle, right_angle):
@@ -67,7 +67,24 @@ class Triangulate():
         return width
     
     def height(self, left_properties, right_properties, dist_to_object):
-        return
+
+
+
+        top = left_properties["l_angle"]
+        bottom = left_properties["r_angle"]
+        object_angle =  abs(top + bottom)
+
+        # Assuming orthogonal placement
+        C = object_angle
+        A = 90 - top
+        B = 90 - bottom
+        b = dist_to_object
+
+        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+
+        height = c
+        print(height)
+        return height
     
 
 
