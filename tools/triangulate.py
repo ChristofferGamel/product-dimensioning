@@ -19,8 +19,8 @@ class Triangulate():
         a, b = self.common_point(dist, left_angle, right_angle)
 
         w = self.width(left_properties, a)
-        #self.depth(right_properties, b)
-        return 
+        d = self.depth(right_properties, b)
+        return w, d
 
 
     def common_point(self, dist, left_angle, right_angle):
@@ -44,9 +44,23 @@ class Triangulate():
         print(depth)
         return depth
 
-
-
     def depth(self, cam_properties, dist):
-        
-        return
+        left_angle = abs(cam_properties["l_angle"])
+        right_angle = abs(cam_properties["r_angle"])
+        object_angle =  left_angle + right_angle
+
+        # Assuming orthogonal placement
+        C = object_angle
+        A = 90 - right_angle
+        B = 90 - left_angle
+        b = dist
+
+        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+
+        width = c
+        print(width)
+        return width
+    
+
+
     

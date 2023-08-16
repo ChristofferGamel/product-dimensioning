@@ -47,8 +47,8 @@ class Mask():
         right = right_image.properties()
         #right_angle = right["l_angle"]
         triangulate = Triangulate()
-        w = triangulate.object_size(dist, left, right)
-        print(w)
+        width, depth = triangulate.object_size(dist, left, right)
+        print(f"width: {width}, depth: {depth}")
         return
     
     def savefig(self, img, title): # Temporary
