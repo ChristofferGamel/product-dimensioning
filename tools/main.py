@@ -23,11 +23,11 @@ class Mask():
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
         
-        cam_0 = Picture.picture("cam0.jpg", 0)
-        cam_1 = Picture.picture("cam1.jpg", 1)
-        
-        image_0 = cv2.imread(cam_0)
-        image_1 = cv2.imread(cam_1)
+        image_0 = Picture.picture(0)
+        image_1 = Picture.picture(1)
+        print(image_0)
+        # image_0 = cv2.imread(cam_0)
+        # image_1 = cv2.imread(cam_1)
         # print(self.image)
         # self.image_height = self.image.shape[0]
         # self.image_width = self.image.shape[1]

@@ -3,7 +3,7 @@ from picamera2 import Picamera2
 import os
 
 class Picture():       
-    def picture(filename, cam):
+    def picture(cam):
         # Path configuration
         #root_absolute_path = os.path.join("/ram/", filename)
 
@@ -21,7 +21,8 @@ class Picture():
         picam.start()
         time.sleep(2)
 
-        picam.capture_file(filename)
-
+        array = picam.capture_array("main")
         picam.close()
-        return filename
+
+        # picam.close()
+        return array
