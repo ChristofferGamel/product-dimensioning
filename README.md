@@ -25,30 +25,15 @@ To connect to the pi, using SSH, enter the following command on your device:
 ### VNC connection
 On your device, enter the Pi's IP adress, and then the given password for the user
 
+## Setting up SSH with GIT
+todo
+
 ## Packages
-For running this program, following packages are reqiured:
-cv2, rembg and matplotlib
-
-The rest are either installed, by the abovementioned packages, or standard Raspberry packages
-
-To install these packages, start by updating the system
+To install tghe packages required to run this program, start by updating the system
 
 `sudo apt-get update && sudo apt-get upgrade`
 
-and then the packagess are installed as followed:
-
-`pip install rembg`
-
-`pip install opencv-python`
-
-`pip install matplotlib`
-
-`pip install trianglesolver`
-
-`right_triangle`
-
-## Setting up SSH with GIT
-todo
+-----------
 
 ## Camera setup
 Firstly make sure the cameras are connected securely with the ArduCam Adapter board
