@@ -26,14 +26,24 @@ To connect to the pi, using SSH, enter the following command on your device:
 On your device, enter the Pi's IP adress, and then the given password for the user
 
 ## Setting up SSH with GIT
-todo
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
 
 ## Packages
-To install tghe packages required to run this program, start by updating the system
+To install the packages required to run this program, start by updating the system
 
 `sudo apt-get update && sudo apt-get upgrade`
 
------------
+First create a new virtual environment
+
+`python -m venv venv`
+
+And activate it by entering the command:
+
+`source venv/bin/activate`
+
+And install the required packages with the following command:
+
+`pip install -r requirements.txt`
 
 ## Camera setup
 Firstly make sure the cameras are connected securely with the ArduCam Adapter board
