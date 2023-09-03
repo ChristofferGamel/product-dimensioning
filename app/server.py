@@ -3,7 +3,9 @@
 import cv2
 import numpy as np
 from flask import Flask, Response
+from multithreading import ThreadManager
 
+tm = ThreadManager(2)
 app = Flask(__name__)
 
 @app.route('/')
@@ -20,5 +22,11 @@ def serve_image():
 
     response = Response(jpg_as_text, content_type='image/jpeg')
     return response
+
+@app.route('/<input>')
+def serve_input(input):
+    output = tm.start_task(input)
+    print(output)
+    return output
 
 app.run(host='0.0.0.0', port=81)

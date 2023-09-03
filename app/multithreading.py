@@ -6,6 +6,7 @@ class ThreadManager:
     def __init__(self, num_threads):
         self.num_threads = num_threads
         self.task_queue = queue.Queue()
+        self.result_queue = queue.Queue()
         self.semaphore = threading.Semaphore(num_threads)
 
     def start_task(self, inp):
@@ -16,6 +17,7 @@ class ThreadManager:
                 self.start_workers(self.num_threads)
             else:
                 self.start_workers(queue_size)
+            return self.result_queue.get()
 
     def start_workers(self, threads_amount):
         for _ in range(threads_amount): 
@@ -30,20 +32,21 @@ class ThreadManager:
             print(f"Worker: {threading.get_ident()}, Working on task: {input}")
             x = {input: input}
             time.sleep(4)
-            print(x) 
+            self.result_queue.put(x)
         finally: 
             self.semaphore.release()
-            print("Threads after executing:", self.threads_amount())
+            print("Free threads after executing:", self.threads_amount())
+            
 
     def threads_amount(self):
         return self.semaphore._value
 
-tm = ThreadManager(2)
-try:
-    while True:
-        inp = int(input("input: "))
-        tm.start_task(inp)
-        print("Unused threads:", tm.threads_amount())
+# tm = ThreadManager(2)
+# try:
+#     while True:
+#         inp = int(input("input: "))
+#         tm.start_task(inp)
+#         print("Unused threads:", tm.threads_amount())
 
-except KeyboardInterrupt:
-    pass
+# except KeyboardInterrupt:
+#     pass
