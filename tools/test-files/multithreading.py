@@ -19,7 +19,7 @@ class ThreadManager:
 
     def start_workers(self, threads_amount):
         for _ in range(threads_amount): 
-            if self.semaphore.acquire(blocking=False):  # Try acquiring without blocking
+            if self.semaphore.acquire(blocking=False):
                 threading.Thread(target=self.worker).start()
             else:
                 time.sleep(0.1)
@@ -27,10 +27,11 @@ class ThreadManager:
     def worker(self):
         try:
             input = self.task_queue.get()
+            print(f"Worker: {threading.get_ident()}, Working on task: {input}")
             x = {input: input}
             time.sleep(4)
             print(x) 
-        finally:  # To ensure the semaphore is always released, even if an exception occurs
+        finally: 
             self.semaphore.release()
             print("Threads after executing:", self.threads_amount())
 
@@ -45,4 +46,4 @@ try:
         print("Unused threads:", tm.threads_amount())
 
 except KeyboardInterrupt:
-    pass  # This will just exit the loop and end the program. `tm.stop()` method does not exist in the provided code.
+    pass
