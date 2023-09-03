@@ -11,11 +11,18 @@ class ThreadManager:
     def start_task(self, inp):
         self.task_queue.put(inp)
         while not self.task_queue.empty():
-            for _ in range(self.num_threads):
-                if self.semaphore.acquire(blocking=False):  # Try acquiring without blocking
-                    threading.Thread(target=self.worker).start()
-                else:
-                    time.sleep(0.1)  # If no semaphore available, sleep a bit
+            queue_size = self.task_queue.qsize()            
+            if self.task_queue.qsize() > self.num_threads:
+                self.start_workers(self.num_threads)
+            else:
+                self.start_workers(queue_size)
+
+    def start_workers(self, threads_amount):
+        for _ in range(threads_amount): 
+            if self.semaphore.acquire(blocking=False):  # Try acquiring without blocking
+                threading.Thread(target=self.worker).start()
+            else:
+                time.sleep(0.1)
 
     def worker(self):
         try:
@@ -25,6 +32,7 @@ class ThreadManager:
             print(x) 
         finally:  # To ensure the semaphore is always released, even if an exception occurs
             self.semaphore.release()
+            print("Threads after executing:", self.threads_amount())
 
     def threads_amount(self):
         return self.semaphore._value
@@ -32,10 +40,9 @@ class ThreadManager:
 tm = ThreadManager(2)
 try:
     while True:
-        print("Unused threads1:", tm.threads_amount())
         inp = int(input("input: "))
         tm.start_task(inp)
-        print("Unused threads2:", tm.threads_amount())
+        print("Unused threads:", tm.threads_amount())
 
 except KeyboardInterrupt:
     pass  # This will just exit the loop and end the program. `tm.stop()` method does not exist in the provided code.
