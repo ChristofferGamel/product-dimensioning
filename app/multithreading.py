@@ -29,9 +29,14 @@ class ThreadManager:
     def worker(self):
         try:
             input = self.task_queue.get()
+            # Call function from here
+
+
+            # Delete 
             print(f"Worker: {threading.get_ident()}, Working on task: {input}")
             x = {input: input}
             time.sleep(4)
+
             self.result_queue.put(x)
         finally: 
             self.semaphore.release()
