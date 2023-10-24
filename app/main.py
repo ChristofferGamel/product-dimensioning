@@ -8,7 +8,7 @@ import time
 # Files
 from cam import Picture
 from contour import Contoured
-from triangulate import Triangulate
+from app.triangulate import Triangulate
 
 
 

@@ -33,9 +33,9 @@ class Triangulate():
         return a,b # a = right cam, b = left cam
     
     def width(self, cam_properties, dist): # Left cam
-        left_angle = abs(cam_properties["l_angle"])
-        right_angle = abs(cam_properties["r_angle"])
-        object_angle =  left_angle + right_angle
+        left_angle = cam_properties["l_angle"]
+        right_angle = cam_properties["r_angle"]
+        object_angle =  abs(left_angle - right_angle)
 
         # Assuming orthogonal placement
         C = object_angle
@@ -50,9 +50,9 @@ class Triangulate():
         return depth, height
 
     def depth(self, cam_properties, dist):
-        left_angle = abs(cam_properties["l_angle"])
-        right_angle = abs(cam_properties["r_angle"])
-        object_angle =  left_angle + right_angle
+        left_angle = cam_properties["l_angle"]
+        right_angle = cam_properties["r_angle"]
+        object_angle =  abs(left_angle - right_angle)
 
         # Assuming orthogonal placement
         C = object_angle
@@ -67,12 +67,9 @@ class Triangulate():
         return width
     
     def height(self, left_properties, right_properties, dist_to_object):
-
-
-
         top = left_properties["l_angle"]
         bottom = left_properties["r_angle"]
-        object_angle =  abs(top + bottom)
+        object_angle =  abs(top - bottom)
 
         # Assuming orthogonal placement
         C = object_angle
