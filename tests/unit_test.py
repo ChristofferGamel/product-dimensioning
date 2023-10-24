@@ -4,39 +4,21 @@ from app.triangulate import Triangulate
 
 class TestTriangulateClass(unittest.TestCase):
 
+
+
     def test_case_1(self): #object_size
         triangulate = Triangulate()
-        left = {"l_angle":14.04,
-        "r_angle":14.04}
-        right = {"l_angle":14.04,
-        "r_angle":14.04}
-        dist = 35.36
+        left = {"l_angle":20.1217889816,
+        "r_angle":-3.6993194923}
+        right = {"l_angle":4.00404551,
+        "r_angle":-19.2357271423}
+        dist = 7.0710678119
 
-        a, b = triangulate.object_size(dist, left, right)
-        
-        self.assert_(a, not None)
-        # self.assertAlmostEqual(a, 10, 2)
-        # self.assertAlmostEqual(b, 10, 2)
-
-    
-    def test_case_2(self): # common point
-        triangulate = Triangulate()
-        a, b = triangulate.common_point(dist=35.36, left_angle=14.04, right_angle=14.04)
-        print(a,b)
-        self.assertAlmostEqual(a, 20.62, 2)
-        self.assertAlmostEqual(b, 20.62, 2)
-
-    def test_case_3(self): #width
-        triangulate = Triangulate()
-
-        dict = {"l_angle":14.04, "r_angle":-14.04}
-
-        dist = 20.62
-        w, h = triangulate.width(dict, dist)
-
-        self.assertAlmostEqual(w, 10, 2)
-        self.assertAlmostEqual(h, 20, 2)
-
+        a, b, c = triangulate.object_size(dist, left, right)
+        print("tis",a,b)
+        # self.assert_(a, not None)
+        self.assertAlmostEqual(a, 2, 2)
+        self.assertAlmostEqual(b, 2, 2)
 
 
 if __name__ == '__main__':

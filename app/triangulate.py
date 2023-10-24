@@ -18,7 +18,7 @@ class Triangulate():
 
 
         a, b = self.common_point(dist, left_angle, right_angle)
-
+        print("common points: ",a,b)
         w, dist_to_object = self.width(left_properties, a)
         d = self.depth(right_properties, b)
         h = self.height(left_properties, right_properties, dist_to_object)
@@ -26,8 +26,8 @@ class Triangulate():
 
 
     def common_point(self, dist, left_angle, right_angle):
-        A = 45 - left_angle
-        B = 45 - right_angle
+        A = 45 - abs(left_angle)
+        B = 45 - abs(right_angle)
 
         a,b,c,A,B,C = solve(c=dist, A=A*degree, B=B*degree)
         return a,b # a = right cam, b = left cam
@@ -39,15 +39,15 @@ class Triangulate():
 
         # Assuming orthogonal placement
         C = object_angle
-        A = 90 - right_angle
-        B = 90 - left_angle
+        A = 90 - abs(right_angle)
+        B = 90 - abs(left_angle)
         b = dist
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
 
         depth = c
-        height = math.sin(A)*b # Distance to object
-        return depth, height
+        dist_to_object = math.sin(A)*b 
+        return depth, dist_to_object
 
     def depth(self, cam_properties, dist):
         left_angle = cam_properties["l_angle"]
@@ -56,9 +56,10 @@ class Triangulate():
 
         # Assuming orthogonal placement
         C = object_angle
-        A = 90 - right_angle
-        B = 90 - left_angle
+        A = 90 - abs(left_angle)
+        B = 90 - abs(right_angle)
         b = dist
+        print(A,B,b,C)
 
         a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
 
@@ -67,22 +68,6 @@ class Triangulate():
         return width
     
     def height(self, left_properties, right_properties, dist_to_object):
-        top = left_properties["l_angle"]
-        bottom = left_properties["r_angle"]
-        object_angle =  abs(top - bottom)
 
-        # Assuming orthogonal placement
-        C = object_angle
-        A = 90 - top
-        B = 90 - bottom
-        b = dist_to_object
-
-        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
-
-        height = c
-        print(height)
-        return height
-    
-
-
+        return 
     

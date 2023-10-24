@@ -79,7 +79,7 @@ class Contoured():
 
         C_rad = math.radians(B)
         b__1 = b / math.tan(C_rad)  
-        a =  abs(point - b)
+        a =  (point - b)
         angle = math.atan(b__1/a)
         angle_deg = math.degrees(angle) 
         return 90 - angle_deg
