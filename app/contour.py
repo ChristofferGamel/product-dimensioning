@@ -46,29 +46,41 @@ class Contoured():
         print("Type of th2:", type(th2))
         return th2
     
-    def extreme_points(self, binary_image):
-        # Find the contours of the object
-        contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+def extreme_points(self, binary_image):
+    # Find the contours of the object
+    contours, hierarchy = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        boxes = []
-        i = 0
-        for c in contours:
-            # here we are ignoring first counter because
-            # findContours function detects whole image as shape
-            if i == 0:
-                i = 1
-                continue
+    boxes = []
+    i = 0
+    for c in contours:
+        # here we are ignoring the first contour because
+        # findContours function detects the whole image as a shape
+        if i == 0:
+            i = 1
+            continue
 
-            (x, y, w, h) = cv2.boundingRect(c)
-            boxes.append([x, y, x + w, y + h])
+        (x, y, w, h) = cv2.boundingRect(c)
+        boxes.append([x, y, x + w, y + h])
 
-        boxes = np.asarray(boxes)
-        left, top = np.min(boxes, axis=0)[:2]
-        right, bottom = np.max(boxes, axis=0)[2:]
+    boxes = np.asarray(boxes)
+    
+    # Debugging output
+    print("binary_image:", binary_image)
+    print("contours:", contours)
+    print("boxes:", boxes)
+
+    if len(boxes) == 0:
         
-        self.left, self.top, self.right, self.bottom = left, top, right, bottom
+        print("boxes len = 0")
+        # Handle the case where there are no valid boxes
+        return None
 
-        return left, top, right, bottom
+    left, top = np.min(boxes, axis=0)[:2]
+    right, bottom = np.max(boxes, axis=0)[2:]
+    
+    self.left, self.top, self.right, self.bottom = left, top, right, bottom
+
+    return left, top, right, bottom
     
     def draw_points_box(self, original_image, x1, y1, x2, y2):
         copy = original_image.copy()
