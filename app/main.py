@@ -57,7 +57,7 @@ class Mask():
         triangulate = Triangulate()
         width, depth, height = triangulate.object_size(dist, left, right)
         print(f"width: {width}, depth: {depth}, height: {height}")
-        return
+        return width, depth, height
     
     def savefig(self, img, title): # Temporary
         cv2.imwrite(title, img)
