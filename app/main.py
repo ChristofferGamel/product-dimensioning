@@ -43,24 +43,26 @@ class Mask():
         #print(f"Triangulating took {t_triangulate - t_pictures} Seconds")
         
 
-    def triangulate(self):
+    def triangulate(self, product_id):
         left = self.image_0
         right = self.image_1
         dist = self.dist
+
         left_image =  Contoured(left)
         right_image = Contoured(right)
+
         self.savefig(left_image.contoured(), "left.jpg")
         self.savefig(right_image.contoured(), "right.jpg")
 
         left = left_image.properties()
-        #left_angle = left["r_angle"]
-
         right = right_image.properties()
-        #right_angle = right["l_angle"]
+        
         triangulate = Triangulate()
         width, depth, height = triangulate.object_size(dist, left, right)
         print(f"width: {width}, depth: {depth}, height: {height}")
-        return width, depth, height
+        
+        return_dict = {product_id,{"width":width,"depth":depth,"height":height}}
+        return return_dict
     
     def savefig(self, img, title): # Temporary
         cv2.imwrite(title, img)

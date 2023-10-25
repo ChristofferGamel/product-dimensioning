@@ -24,11 +24,9 @@ def hello_world():
 
 @app.route('/get-dimensions/<input>')
 def serve_dimensions(input):
-    print("Input: ",input)
-    width, depth, height = Mask().triangulate()
-    dimensions = {"width":width, "depth":depth, "height":height}
-
-    return dimensions
+    print("Calculating for: ",input)
+    dict = Mask().triangulate(input)
+    return dict
 
 @app.route('/<input>')
 def serve_input(input):
