@@ -27,17 +27,23 @@ class Contoured():
         return self.string
 
     def contrast(self, image):
+        print(type(image))
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
+        print("contrast: Success")
         return contrast
     
     def remove_bg(self, image):
         removed_bg = remove(image)
+        print("rembg: Success")
         return removed_bg
     
     def thresholding(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray_8bit = cv2.convertScaleAbs(gray)
         th2 = cv2.adaptiveThreshold(gray_8bit, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.blocksize, self.C)
+        print("thresholding: Success")
+        print(th2)
+        print("Type of th2:", type(th2))
         return th2
     
     def extreme_points(self, binary_image):
