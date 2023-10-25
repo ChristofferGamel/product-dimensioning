@@ -20,6 +20,8 @@ class TestTriangulateClass(unittest.TestCase):
         self.assertAlmostEqual(a, 2, 2)
         self.assertAlmostEqual(b, 2, 2)
 
+    
+
 
 if __name__ == '__main__':
     unittest.main()

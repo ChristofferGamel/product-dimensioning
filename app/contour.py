@@ -21,7 +21,7 @@ class Contoured():
         self.horizontal_fov = 66 #degrees
         self.vertical_fov = 41 #degrees
 
-        self.contoured()
+        # self.contoured()
     
     def __abs__(self):
         return self.string
@@ -79,10 +79,14 @@ class Contoured():
 
         C_rad = math.radians(B)
         b__1 = b / math.tan(C_rad)  
-        a =  (point - b)
+        a =  abs(point - b)
         angle = math.atan(b__1/a)
         angle_deg = math.degrees(angle) 
-        return 90 - angle_deg
+        if(point>b):
+            return 0 - (90 - angle_deg)
+        else:
+            return 90 - angle_deg
+
     
     def properties(self):
         dict = {"image_width":self.image_width, 
