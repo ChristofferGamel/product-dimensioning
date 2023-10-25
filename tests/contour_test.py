@@ -8,16 +8,11 @@ class TestContourClass(unittest.TestCase):
 
 
     def test_angle(self): 
-
-
         image_0 = cv2.imread("cam0.jpg")
-        image_1 = cv2.imread("cam1.jpg")
-
-
         contour = Contoured(image_0)
-        point = 719
+        point = 360
         fov = 78
-        angle = contour.angle(point, fov)
+        angle = contour.angle(point, fov, 720)
         print(angle)
     
 

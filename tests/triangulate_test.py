@@ -15,7 +15,7 @@ class TestTriangulateClass(unittest.TestCase):
         dist = 7.0710678119
 
         a, b, c = triangulate.object_size(dist, left, right)
-        print("tis",a,b)
+        
         # self.assert_(a, not None)
         self.assertAlmostEqual(a, 2, 2)
         self.assertAlmostEqual(b, 2, 2)
