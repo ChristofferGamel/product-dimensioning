@@ -61,7 +61,7 @@ class Mask():
         width, depth, height = triangulate.object_size(dist, left, right)
         print(f"width: {width}, depth: {depth}, height: {height}")
         
-        return_dict = {product_id,{"width":width,"depth":depth,"height":height}}
+        return_dict = {product_id:{"width":width,"depth":depth,"height":height}}
         return return_dict
     
     def savefig(self, img, title): # Temporary
