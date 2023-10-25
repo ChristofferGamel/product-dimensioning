@@ -16,7 +16,7 @@ class Mask():
     def __init__(self) -> None:
         t_start = time.time()
         # Physical setup
-        dist = 53.0                # Distance betweeen cameras
+        self.dist = 53.0                # Distance betweeen cameras
 
 
         # Image adjustments:
@@ -28,22 +28,25 @@ class Mask():
         cam_0 = Picture.picture("cam0.jpg", 0)
         cam_1 = Picture.picture("cam1.jpg", 1)
         
-        image_0 = cv2.imread(cam_0)
-        image_1 = cv2.imread(cam_1)
+        self.image_0 = cv2.imread(cam_0)
+        self.image_1 = cv2.imread(cam_1)
 
         t_pictures = time.time()
         # print(self.image)
         # self.image_height = self.image.shape[0]
         # self.image_width = self.image.shape[1]
-        self.triangulate(image_0, image_1, dist)
+        #self.triangulate(image_0, image_1, dist)
         # self.show(image_0)
         # self.show(image_1)
-        t_triangulate = time.time()
-        print(f"Taking pictures took {t_pictures - t_start} Seconds")
-        print(f"Triangulating took {t_triangulate - t_pictures} Seconds")
+        #t_triangulate = time.time()
+        #print(f"Taking pictures took {t_pictures - t_start} Seconds")
+        #print(f"Triangulating took {t_triangulate - t_pictures} Seconds")
         
 
-    def triangulate(self, left, right, dist):
+    def triangulate(self):
+        left = self.image_0
+        right = self.image_1
+        dist = self.dist
         left_image =  Contoured(left)
         right_image = Contoured(right)
         self.savefig(left_image.contoured(), "left.jpg")

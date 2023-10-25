@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from flask import Flask, Response
 from multithreading import ThreadManager
-import main
+from main import Mask
 
 tm = ThreadManager(2)
 app = Flask(__name__)
@@ -25,7 +25,10 @@ def hello_world():
 @app.route('/get-dimensions/<input>')
 def serve_dimensions(input):
     print("Input: ",input)
-    width, depth, height = main.Mask()
+    width, depth, height = Mask().triangulate()
+    dimensions = {"width":width, "depth":depth, "height":height}
+
+    return dimensions
 
 @app.route('/<input>')
 def serve_input(input):
