@@ -28,7 +28,7 @@ class Triangulate():
     def common_point(self, dist, left_angle, right_angle):
         A = 45 - abs(left_angle)
         B = 45 - abs(right_angle)
-
+        print(f"common point: A: {A}, B: {B}, Dist: {dist}, r-l angle", left_angle,right_angle)
         a,b,c,A,B,C = solve(c=dist, A=A*degree, B=B*degree)
         return a,b # a = right cam, b = left cam
     
