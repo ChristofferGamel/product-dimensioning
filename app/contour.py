@@ -27,6 +27,7 @@ class Contoured():
         return self.string
 
     def contrast(self, image):
+        cv2.imshow("org",image)
         print(type(image))
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         print("contrast: Success")
@@ -35,6 +36,7 @@ class Contoured():
     def remove_bg(self, image):
         removed_bg = remove(image)
         print("rembg: Success")
+#        cv2.imshow("rembg",removed_bg)
         return removed_bg
     
     def thresholding(self, image):
@@ -44,6 +46,7 @@ class Contoured():
         print("thresholding: Success")
         print(th2)
         print("Type of th2:", type(th2))
+        #cv2.imshow("th2",th2)
         return th2
     
     def extreme_points(self, binary_image):
