@@ -25,14 +25,10 @@ class Picture():
 
         org_image = picam.capture_image()
         picam.close()
-        #open_cv_image = np.array(array)
-        #open_cv_image = open_cv_image[:, :, ::-1].copy() 
-        
 
-#        image_data = array.astype(np.uint8)
-#        print(org_image)
-#        image = cv2.imdecode(image_data,1)
+
+
         opencv_image = cv2.cvtColor(np.array(org_image), cv2.COLOR_RGBA2BGR)
-        print(opencv_image)
+
 
         return opencv_image
