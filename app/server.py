@@ -19,8 +19,8 @@ def serve_dimensions(input):
     dict = process_images(pictures)
     return dict
 
-def take_pictures():
-    pictures_dict = Mask().take_pictures()
+def take_pictures(id):
+    pictures_dict = Mask().take_pictures(id)
     return pictures_dict
 
 def process_images(pictures):
