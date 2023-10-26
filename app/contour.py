@@ -27,6 +27,7 @@ class Contoured():
         return self.string
 
     def contrast(self, image):
+        print(type(image))
         contrast = cv2.convertScaleAbs(image, alpha=self.alpha, beta=self.beta)
         return contrast
     
@@ -47,8 +48,8 @@ class Contoured():
         boxes = []
         i = 0
         for c in contours:
-            # here we are ignoring first counter because
-            # findContours function detects whole image as shape
+            # here we are ignoring the first contour because
+            # findContours function detects the whole image as a shape
             if i == 0:
                 i = 1
                 continue
@@ -57,6 +58,12 @@ class Contoured():
             boxes.append([x, y, x + w, y + h])
 
         boxes = np.asarray(boxes)
+        if len(boxes) == 0:
+            
+            print("boxes len = 0")
+            # Handle the case where there are no valid boxes
+            return None
+
         left, top = np.min(boxes, axis=0)[:2]
         right, bottom = np.max(boxes, axis=0)[2:]
         
