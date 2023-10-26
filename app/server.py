@@ -42,15 +42,13 @@ def picture_loop():
             picture_taking_in_progress = True
             input = awaiting_picture.get()
             pictures = take_pictures(input)
-#            awaiting_picture.task_done()
             awaiting_processing.put(pictures)
-#            picture_taking_in_progress = False
             return pictures
     else:
         print("Picture lock")
         time.sleep(0.3)
         picture_loop()
-    awaiting_pictures.task_done()
+    awaiting_picture.task_done()
     picture_taking_in_progress = False
 
 def take_pictures(id):
@@ -65,8 +63,6 @@ def process_images(pictures):
             processing_in_progress = True
             pictures = awaiting_processing.get()
             result = Mask().triangulate(pictures)
-#            awaiting_processing.task_done()
-#            processing_in_progress = False
             return result
         else:
             time.sleep(1.3)
