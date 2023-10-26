@@ -58,6 +58,7 @@ class Contoured():
         boxes = np.asarray(boxes)
 
         if len(boxes) == 0:
+            print("boxes = 0")
             raise Exception("boxes len = 0")
 
 
