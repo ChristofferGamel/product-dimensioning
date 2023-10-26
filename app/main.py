@@ -14,36 +14,23 @@ from triangulate import Triangulate
 
 class Mask():
     def __init__(self) -> None:
-        t_start = time.time()
+        self.t_start = time.time()
         # Physical setup
-        self.dist = 53.0                # Distance betweeen cameras
-
+        self.dist = 53.0           # Distance betweeen cameras
 
         # Image adjustments:
         self.alpha = 1.45          # contrast
         self.beta = -100           # contrast brightness
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
-        
+
+    def triangulate(self, product_id):
         cam_0 = Picture.picture(0)
         cam_1 = Picture.picture(1)
         
         self.image_0 = cam_0
         self.image_1 = cam_1
 
-        t_pictures = time.time()
-        # print(self.image)
-        # self.image_height = self.image.shape[0]
-        # self.image_width = self.image.shape[1]
-        #self.triangulate(image_0, image_1, dist)
-        # self.show(image_0)
-        # self.show(image_1)
-        #t_triangulate = time.time()
-        #print(f"Taking pictures took {t_pictures - t_start} Seconds")
-        #print(f"Triangulating took {t_triangulate - t_pictures} Seconds")
-        
-
-    def triangulate(self, product_id):
         left = self.image_0
         right = self.image_1
         dist = self.dist
@@ -62,6 +49,8 @@ class Mask():
         print(f"width: {width}, depth: {depth}, height: {height}")
         
         return_dict = {product_id:{"width":width,"depth":depth,"height":height}}
+        t_pictures = time.time()
+        print("Time taken: ", t_pictures-self.t_start)
         return return_dict
     
     def savefig(self, img, title): # Temporary
