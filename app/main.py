@@ -9,6 +9,7 @@ import time
 from cam import Picture
 from contour import Contoured
 from triangulate import Triangulate
+from multithreading import ThreadManager
 
 
 
@@ -24,6 +25,9 @@ class Mask():
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
 
+        # Threading
+        self.tm = ThreadManager(2)
+
     def triangulate(self, product_id):
         cam_0 = Picture.picture(0)
         cam_1 = Picture.picture(1)
@@ -35,8 +39,8 @@ class Mask():
         right = self.image_1
         dist = self.dist
 
-        left_image =  Contoured(left)
-        right_image = Contoured(right)
+        left_image =  self.tm(left)
+        right_image = self.tm(right)
 
         self.savefig(left_image.contoured(), "left.jpg")
         self.savefig(right_image.contoured(), "right.jpg")

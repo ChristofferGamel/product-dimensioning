@@ -1,6 +1,7 @@
 import threading
 import time
 import queue
+from contour import Contoured
 
 class ThreadManager:
     def __init__(self, num_threads):
@@ -33,15 +34,16 @@ class ThreadManager:
 
 
             # Delete 
-            print(f"Worker: {threading.get_ident()}, Working on task: {input}")
-            x = {input: input}
-            time.sleep(4)
+            # print(f"Worker: {threading.get_ident()}, Working on task: {input}")
+            # x = {input: input}
+            # time.sleep(4)
+            ret_image = Contoured(input)
 
-            self.result_queue.put(x)
+            self.result_queue.put(ret_image)
         finally: 
             self.semaphore.release()
             print("Free threads after executing:", self.threads_amount())
-            
+            return ret_image
 
     def threads_amount(self):
         return self.semaphore._value
