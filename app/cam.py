@@ -16,7 +16,7 @@ class Picture():
                     "Sharpness":3,
                     "AwbMode":5
                     }
-        config = picam.create_preview_configuration(main={"size": (2304, 1296)}, controls=controls)
+        config = picam.create_preview_configuration(main={"size": (1152, 648)}, controls=controls)
         picam.configure(config)
         
         
