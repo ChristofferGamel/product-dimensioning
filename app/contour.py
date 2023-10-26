@@ -58,11 +58,10 @@ class Contoured():
             boxes.append([x, y, x + w, y + h])
 
         boxes = np.asarray(boxes)
+        boxes = [] # DELETE 
         if len(boxes) == 0:
-            
-            print("boxes len = 0")
-            # Handle the case where there are no valid boxes
-            return None
+            raise Exception("boxes len = 0")
+
 
         left, top = np.min(boxes, axis=0)[:2]
         right, bottom = np.max(boxes, axis=0)[2:]
@@ -119,7 +118,10 @@ class Contoured():
         removed_bg = self.remove_bg(contrasted)
         thresholded = self.thresholding(removed_bg)
         
-        y1, y2, x1, x2 = self.extreme_points(thresholded)
+        try:
+            y1, y2, x1, x2 = self.extreme_points(thresholded)
+        except:
+            raise Exception("No contours found")
         draw = self.draw_points_box(self.image, y1, y2, x1, x2)
 
         return draw
