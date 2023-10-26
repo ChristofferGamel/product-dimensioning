@@ -39,8 +39,8 @@ class Mask():
         right = self.image_1
         dist = self.dist
 
-        left_image =  self.tm(left)
-        right_image = self.tm(right)
+        left_image =  self.tm.start_task(left)
+        right_image = self.tm.start_task(right)
 
         self.savefig(left_image.contoured(), "left.jpg")
         self.savefig(right_image.contoured(), "right.jpg")
