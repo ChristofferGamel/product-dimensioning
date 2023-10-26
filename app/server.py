@@ -25,13 +25,13 @@ def serve_dimensions(input):
     print("Calculating for: ",input)
     awaiting_picture.put(input)
     # To handle the possibility of a camera failure / contouring failure
-#    try:
-    pictures = picture_loop()
-    dict = process_images(pictures)
-    return dict
-#    except Exception as e:
-#        print(e)
-#        return make_response(str(e), 503)
+    try:
+        pictures = picture_loop()
+        dict = process_images(pictures)
+        return dict
+    except Exception as e:
+        print(e)
+        return make_response(str(e), 503)
 
 
 def picture_loop():
