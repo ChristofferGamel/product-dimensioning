@@ -20,8 +20,6 @@ class Contoured():
         # Camera properties
         self.horizontal_fov = 66 #degrees
         self.vertical_fov = 41 #degrees
-
-        # self.contoured()
     
     def __abs__(self):
         return self.string
