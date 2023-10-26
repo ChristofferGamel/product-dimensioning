@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from flask import Flask, Response
+from flask import Flask, Response, make_response
 from main import Mask
 import queue
 import threading
@@ -30,7 +30,7 @@ def serve_dimensions(input):
         dict = process_images(pictures)
         return dict
     except Exception as e:
-        return (e, 503)
+        return make_response(e, 503)
 
 
 def picture_loop():
