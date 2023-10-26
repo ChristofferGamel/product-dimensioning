@@ -24,12 +24,20 @@ class Mask():
         self.blocksize = 9         # thresholding
         self.C = 5                 # thresholding
 
-    def triangulate(self, product_id):
+    def take_pictures(self, product_id):
+        self.t_start = time.time()
         cam_0 = Picture.picture(0)
         cam_1 = Picture.picture(1)
-        
-        self.image_0 = cam_0
-        self.image_1 = cam_1
+        pictures = {"id":product_id, "cam_0":cam_0, "cam_1":cam_1}
+        return pictures
+
+    def triangulate(self, pictures):
+        self.image_0 = pictures['cam_0']
+        self.image_1 = pictures['cam_1']
+        product_id = pictures['id']
+
+        print("Triangulating for: ", product_id) 
+
 
         left = self.image_0
         right = self.image_1

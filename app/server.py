@@ -1,39 +1,70 @@
 import cv2
 import numpy as np
 from flask import Flask, Response
-from multithreading import ThreadManager
 from main import Mask
+import queue
+import threading
+import time
 
-tm = ThreadManager(2)
+# Queues
+awaiting_picture = queue.Queue()
+awaiting_processing = queue.Queue()
+
+camera_lock = threading.Lock() # Prevents overlapping picture taking
+picture_taking_in_progress = False
+processing_in_progress = False
+
 app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
 
-#@app.route('/img')
-#def serve_image():
-#    img = np.zeros((512, 512, 3), np.uint8)
-#    cv2.circle(img, (256, 256), 50, (0, 255, 0), -1)
-#
-#    _, buffer = cv2.imencode('.jpg', img)
-#    jpg_as_text = buffer.tobytes()
-#
-#    response = Response(jpg_as_text, content_type='image/jpeg')
-#    return response
-
 @app.route('/get-dimensions/<input>')
 def serve_dimensions(input):
     print("Calculating for: ",input)
-    dict = Mask().triangulate(input)
+    awaiting_picture.put(input)
+    pictures = picture_loop()
+    dict = process_images(pictures)
     return dict
 
-@app.route('/<input>')
-def serve_input(input):
-    output = tm.start_task(input)
-    print(output)
-    return output
+def picture_loop():
+    global picture_taking_in_progress
 
-#app.run(host='0.0.0.0', port=5000)
+    if not picture_taking_in_progress:
+        with camera_lock:
+            picture_taking_in_progress = True
+            input = awaiting_picture.get()
+            pictures = take_pictures(input)
+            awaiting_picture.task_done()
+            awaiting_processing.put(pictures)
+            picture_taking_in_progress = False
+            return pictures
+    else:
+        print("Picture lock")
+        time.sleep(0.3)
+        picture_loop()
+        
+
+def take_pictures(id):
+    pictures_dict = Mask().take_pictures(id)
+    return pictures_dict
+
+def process_images(pictures):
+    global processing_in_progress
+
+    while not awaiting_processing.empty():
+        if not processing_in_progress:
+            processing_in_progress = True
+            pictures = awaiting_processing.get()
+            result = Mask().triangulate(pictures)
+            awaiting_processing.task_done()
+            processing_in_progress = False
+            return result
+        else:
+            time.sleep(1.3)
+            print("processing lock")
+            process_images(pictures)
+
 if __name__ == '__main__':
     app.run(threaded=True)
