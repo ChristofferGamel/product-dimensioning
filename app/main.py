@@ -42,7 +42,8 @@ class Mask():
         left = self.image_0
         right = self.image_1
         dist = self.dist
-
+        self.savefig(left, "left_stock.jpg")
+        self.savefig(right, "right_stock.jpg")
         left_image =  Contoured(left)
         right_image = Contoured(right)
 
