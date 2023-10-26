@@ -30,7 +30,7 @@ def serve_dimensions(input):
         dict = process_images(pictures)
         return dict
     except Exception as e:
-        
+        print(e)
         return make_response(str(e), 503)
 
 
@@ -39,17 +39,21 @@ def picture_loop():
 
     if not picture_taking_in_progress:
         with camera_lock:
-            picture_taking_in_progress = True
-            input = awaiting_picture.get()
-            pictures = take_pictures(input)
-            awaiting_processing.put(pictures)
-            return pictures
+            try:
+                picture_taking_in_progress = True
+                input = awaiting_picture.get()
+                pictures = take_pictures(input)
+                awaiting_processing.put(pictures)
+                return pictures
+            finally:
+                awaiting_picture.task_done()
+                picture_taking_in_progress = False
+
     else:
         print("Picture lock")
         time.sleep(0.3)
         picture_loop()
-    awaiting_picture.task_done()
-    picture_taking_in_progress = False
+    
 
 def take_pictures(id):
     pictures_dict = Mask().take_pictures(id)
@@ -60,16 +64,19 @@ def process_images(pictures):
 
     while not awaiting_processing.empty():
         if not processing_in_progress:
-            processing_in_progress = True
-            pictures = awaiting_processing.get()
-            result = Mask().triangulate(pictures)
-            return result
+            try:
+                processing_in_progress = True
+                pictures = awaiting_processing.get()
+                result = Mask().triangulate(pictures)
+                return result
+            finally:
+                processing_in_progress = False
+                awaiting_processing.task_done()
         else:
             time.sleep(1.3)
             print("processing lock")
             process_images(pictures)
-        processing_in_progress = False
-        awaiting_processing.task_done()
+        
 
 if __name__ == '__main__':
     app.run(threaded=True)

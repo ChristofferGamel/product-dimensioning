@@ -19,9 +19,9 @@ class Triangulate():
 
         a, b = self.common_point(dist, left_angle, right_angle)
         print("common points: ",a,b)
-        w, dist_to_object = self.width(left_properties, a)
-        d = self.depth(right_properties, b)
-        h = self.height(left_properties, right_properties, dist_to_object)
+        w, dist_to_object_l = self.width(left_properties, a)
+        d, dist_to_object_r = self.depth(right_properties, b)
+        h = self.height(left_properties, right_properties, dist_to_object_l, dist_to_object_r)
         return w, d, h
 
 
@@ -65,9 +65,25 @@ class Triangulate():
 
         width = c
         print(width)
-        return width
+        dist_to_object = math.sin(A)*b 
+        return width, dist_to_object
     
-    def height(self, left_properties, right_properties, dist_to_object):
+    def height(self, left_properties, right_properties, dist_l, dist_r):
+        # left_cam 
+        l_top = self.calc_height(left_properties['top_angle'], dist_l)
+        l_bottom = self.calc_height(left_properties['bottom_angle'], dist_l)
+        left_height = l_top + l_bottom
 
-        return 
+        # right_cam
+        r_top = self.calc_height(right_properties['top_angle'], dist_r)
+        r_bottom = self.calc_height(right_properties['bottom_angle'], dist_r)
+        right_height = r_top + r_bottom
+
+        if(left_height > right_height):
+            return left_height
+        else:
+            return right_height
     
+    def calc_height(self, B, a):
+        c = a / math.cos(math.radians(B))
+        return c
