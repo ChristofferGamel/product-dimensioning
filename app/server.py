@@ -12,6 +12,7 @@ awaiting_processing = queue.Queue()
 
 camera_lock = threading.Lock() # Prevents overlapping picture taking
 picture_taking_in_progress = False
+processing_in_progress = False
 
 app = Flask(__name__)
 
@@ -50,11 +51,20 @@ def take_pictures(id):
     return pictures_dict
 
 def process_images(pictures):
+    global processing_in_progress
+
     while not awaiting_processing.empty():
-        pictures = awaiting_processing.get()
-        result = Mask().triangulate(pictures)
-        awaiting_processing.task_done()
-        return result
+        if not processing_in_progress:
+            processing_in_progress = True
+            pictures = awaiting_processing.get()
+            result = Mask().triangulate(pictures)
+            awaiting_processing.task_done()
+            processing_in_progress = False
+            return result
+        else:
+            time.sleep(1.3)
+            print("processing lock")
+            process_images(pictures)
 
 if __name__ == '__main__':
     app.run(threaded=True)
