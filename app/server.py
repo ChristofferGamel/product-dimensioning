@@ -23,10 +23,7 @@ def hello_world():
 def serve_dimensions(input):
     print("Calculating for: ",input)
     awaiting_picture.put(input)
-
-
     pictures = picture_loop()
-    # pictures = take_pictures()
     dict = process_images(pictures)
     return dict
 
