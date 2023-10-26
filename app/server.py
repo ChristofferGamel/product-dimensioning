@@ -11,29 +11,21 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello, World!'
 
-#@app.route('/img')
-#def serve_image():
-#    img = np.zeros((512, 512, 3), np.uint8)
-#    cv2.circle(img, (256, 256), 50, (0, 255, 0), -1)
-#
-#    _, buffer = cv2.imencode('.jpg', img)
-#    jpg_as_text = buffer.tobytes()
-#
-#    response = Response(jpg_as_text, content_type='image/jpeg')
-#    return response
-
 @app.route('/get-dimensions/<input>')
 def serve_dimensions(input):
     print("Calculating for: ",input)
-    dict = Mask().triangulate(input)
+    #dict = Mask().triangulate(input)
+    pictures = take_pictures(input)
+    dict = process_images(pictures)
     return dict
 
-@app.route('/<input>')
-def serve_input(input):
-    output = tm.start_task(input)
-    print(output)
-    return output
+def take_pictures():
+    pictures_dict = Mask().take_pictures()
+    return pictures_dict
 
-#app.run(host='0.0.0.0', port=5000)
+def process_images(pictures):
+    result = Mask().triangulate(pictures)
+    return result
+
 if __name__ == '__main__':
     app.run(threaded=True)
