@@ -78,6 +78,10 @@ class Triangulate():
         r_top = self.calc_height(right_properties['top_angle'], dist_r)
         r_bottom = self.calc_height(right_properties['bottom_angle'], dist_r)
         right_height = r_top + r_bottom
+        print(f"left height: {left_height} right height: {right_height}")
+        print(f"left: top angle: {left_properties['top_angle']} bottom angle: {left_properties['bottom_angle']} dist: {dist_l}")
+        print(f"right: top angle: {right_properties['top_angle']} bottom angle: {right_properties['bottom_angle']} dist: {dist_r}")
+
 
         if(left_height > right_height):
             return left_height
