@@ -16,7 +16,7 @@ class Mask():
     def __init__(self) -> None:
         self.t_start = time.time()
         # Physical setup
-        self.dist = 53.0           # Distance betweeen cameras
+        self.dist = 40.0           # Distance betweeen cameras
 
         # Image adjustments:
         self.alpha = 1.45          # contrast
@@ -42,14 +42,14 @@ class Mask():
         left = self.image_0
         right = self.image_1
         dist = self.dist
-        #self.savefig(left, "left_stock.jpg")
-        #self.savefig(right, "right_stock.jpg")
+        self.savefig(left, "left_stock.jpg")
+        self.savefig(right, "right_stock.jpg")
         left_image =  Contoured(left)
         right_image = Contoured(right)
-        left_image.contoured()
-        right_image.contoured()
-#        self.savefig(left_image.contoured(), "left.jpg")
-#        self.savefig(right_image.contoured(), "right.jpg")
+        l_cont = left_image.contoured()
+        r_cont = right_image.contoured()
+        self.savefig(l_cont, "left.jpg")
+        self.savefig(r_cont, "right.jpg")
 
         left = left_image.properties()
         right = right_image.properties()
