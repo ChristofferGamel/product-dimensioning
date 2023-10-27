@@ -16,9 +16,7 @@ class Triangulate():
         # Right camera max value
         right_angle = right_properties["l_angle"]
 
-
         a, b = self.common_point(dist, left_angle, right_angle)
-        print("common points: ",a,b)
         w, dist_to_object_l = self.width(left_properties, a)
         d, dist_to_object_r = self.depth(right_properties, b)
         h = self.height(left_properties, right_properties, dist_to_object_l, dist_to_object_r)
@@ -28,7 +26,6 @@ class Triangulate():
     def common_point(self, dist, left_angle, right_angle):
         A = 45 - abs(left_angle)
         B = 45 - abs(right_angle)
-        print(f"common point: A: {A}, B: {B}, Dist: {dist}, r-l angle", left_angle,right_angle)
         a,b,c,A,B,C = solve(c=dist, A=A*degree, B=B*degree)
         return a,b # a = right cam, b = left cam
     
@@ -43,7 +40,12 @@ class Triangulate():
         B = 90 - abs(left_angle)
         b = dist
 
-        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        try:
+            a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        except:
+            print(f"C: {C}, A: {A}, B: {B}, b: {b}")
+            raise Exception ("angle sum = 0")
+        
 
         depth = c
         dist_to_object = math.sin(A)*b 
@@ -59,12 +61,14 @@ class Triangulate():
         A = 90 - abs(left_angle)
         B = 90 - abs(right_angle)
         b = dist
-        print(A,B,b,C)
-
-        a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
-
+        
+        try:
+            a,b,c,A,B,C = solve(C=C*degree,B=B*degree,b=b)
+        except:
+            print(f"C: {C}, A: {A}, B: {B}, b: {b}")
+            raise Exception ("angle sum = 0")
+        
         width = c
-        print(width)
         dist_to_object = math.sin(A)*b 
         return width, dist_to_object
     
@@ -79,8 +83,8 @@ class Triangulate():
         r_bottom = self.calc_height(right_properties['bottom_angle'], dist_r)
         right_height = r_top + r_bottom
         print(f"left height: {left_height} right height: {right_height}")
-        print(f"left: top angle: {left_properties['top_angle']} bottom angle: {left_properties['bottom_angle']} dist: {dist_l}")
-        print(f"right: top angle: {right_properties['top_angle']} bottom angle: {right_properties['bottom_angle']} dist: {dist_r}")
+        # print(f"left: top angle: {left_properties['top_angle']} bottom angle: {left_properties['bottom_angle']} dist: {dist_l}")
+        # print(f"right: top angle: {right_properties['top_angle']} bottom angle: {right_properties['bottom_angle']} dist: {dist_r}")
 
 
         if(left_height > right_height):

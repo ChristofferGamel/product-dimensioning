@@ -3,29 +3,23 @@ from app.triangulate import Triangulate
 
 
 class TestTriangulateClass(unittest.TestCase):
-
-
-
-    # def test_case_1(self): #object_size
-    #     triangulate = Triangulate()
-    #     left = {"l_angle":20.1217889816,
-    #     "r_angle":-3.6993194923}
-    #     right = {"l_angle":4.00404551,
-    #     "r_angle":-19.2357271423}
-    #     dist = 7.0710678119
-
-    #     a, b, c = triangulate.object_size(dist, left, right)
+    def test_e2e(self):
+        triangulate = Triangulate()
+        dist = 5.66
+        left_properties = {"r_angle":-18.43,"l_angle":18.43,"top_angle":-18.43, "bottom_angle":18.43}
+        right_properties = {"r_angle":-18.43,"l_angle":18.43,"top_angle":-18.43, "bottom_angle":18.43}
+        w,d,h = triangulate.object_size(dist, left_properties, right_properties)
         
-    #     # self.assert_(a, not None)
-    #     self.assertAlmostEqual(a, 2, 2)
-    #     self.assertAlmostEqual(b, 2, 2)
+        self.assertAlmostEqual(w, 2, 2)
+        self.assertAlmostEqual(d, 2, 2)
+        self.assertAlmostEqual(h, 2, 2)
 
     def test_width(self):
         triangulate = Triangulate()
         angles = {"l_angle":20, "r_angle":-20}
         dist = 5
         depth, dist_out = triangulate.width(angles, dist)
-        print(depth, dist_out)
+        
         self.assertAlmostEqual(depth, 3.42, 2)
         self.assertAlmostEqual(dist_out, 4.7, 2)
     
@@ -35,7 +29,7 @@ class TestTriangulateClass(unittest.TestCase):
         angles = {"l_angle":20, "r_angle":-20}
         dist = 5
         depth, dist_out = triangulate.depth(angles, dist)
-        print(depth, dist_out)
+        
         self.assertAlmostEqual(depth, 3.42, 2)
         self.assertAlmostEqual(dist_out, 4.7, 2)  
 
