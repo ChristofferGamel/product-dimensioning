@@ -89,5 +89,5 @@ class Triangulate():
             return right_height
     
     def calc_height(self, B, a):
-        c = a / math.cos(math.radians(B))
+        c = a * math.tan(math.radians(B))
         return c
