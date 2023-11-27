@@ -71,7 +71,7 @@ class Contoured():
     
     def draw_points_box(self, original_image, x1, y1, x2, y2):
         copy = original_image.copy()
-        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 5) 
+        return cv2.rectangle(copy, (x1, y1), (x2, y2), (0, 255, 0), 1) 
     
     def deg_to_rad(self, deg):
         return((deg * math.pi)/180)
