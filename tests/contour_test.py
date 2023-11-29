@@ -19,8 +19,8 @@ class TestContourClass(unittest.TestCase):
         angle = contour.angle(point, fov, 720)
         self.assertTrue(angle == 0)
 
-    def test_e2e(self):
-        height, width = 300, 400  # You can adjust the size of the image
+    def test_randomly_generated_square(self):
+        height, width = 300, 400
         image = np.zeros((height, width, 3), dtype=np.uint8)
 
         left = random.randint(0, width-1)
@@ -41,7 +41,8 @@ class TestContourClass(unittest.TestCase):
         cv2.imwrite('contoured.jpg',contoured)
 
 
-    def test_e2e(self):
+
+    def test_visual_inspection(self):
         height, width = 300, 400
         image = np.zeros((height, width, 3), dtype=np.uint8)
 
