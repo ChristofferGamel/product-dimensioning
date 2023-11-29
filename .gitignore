@@ -1,2 +1,6 @@
 /.vscode
 /venv
+/tests/test_pictures
+/tests/unit_test_pictures
+/tests/contoured_pictures
+
